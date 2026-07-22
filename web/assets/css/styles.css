@@ -674,34 +674,58 @@ h1,h2,h3{margin:0;letter-spacing:-.03em;line-height:1.02;font-weight:900}
   .taller__panel.is-active .taller__vertical{opacity:0}
 }
 @media (max-width:760px){
-  .taller-head{grid-template-columns:1fr;padding-bottom:20px}
-  .taller-head__aside{align-items:flex-start;width:100%}
-  .taller-head__aside .filter-row{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;
-    -webkit-overflow-scrolling:touch;gap:20px}
-  .taller-head__cta{align-self:flex-end}
+  .taller-head{grid-template-columns:1fr;padding-bottom:20px;padding-right:0}
+  .taller-head__aside{align-items:flex-start;width:100%;gap:10px}
+  /* fila de filtros: scroll horizontal con edge padding para que el último chip no se corte
+     y una máscara de fade a la derecha que sugiera scroll */
+  .taller-head__aside .filter-row{overflow-x:auto;flex-wrap:nowrap;padding:0 var(--pad) 6px;
+    margin:0 calc(-1 * var(--pad));-webkit-overflow-scrolling:touch;gap:22px;
+    scroll-snap-type:x proximity;scrollbar-width:none;
+    -webkit-mask-image:linear-gradient(90deg,#000 0,#000 90%,transparent 100%);
+            mask-image:linear-gradient(90deg,#000 0,#000 90%,transparent 100%);}
+  .taller-head__aside .filter-row::-webkit-scrollbar{display:none}
+  .taller-head__aside .filter-row .chip{flex:0 0 auto;font-size:11px;letter-spacing:.12em;padding:6px 2px}
+  .taller-head__cta{align-self:flex-end;font-size:11px}
 
-  /* carrusel horizontal con swipe nativo. Un producto entero + parte del siguiente */
-  .taller{display:flex;flex-direction:row;height:auto;
-    overflow-x:auto;overflow-y:hidden;
-    scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
-    scrollbar-width:none;padding-bottom:6px}
+  /* --- carrusel de tarjetas de producto (rediseño móvil) --- */
+  .taller{display:flex;flex-direction:row;height:auto;gap:12px;
+    overflow-x:auto;overflow-y:visible;padding:0 var(--pad) 8px;
+    margin:0 calc(-1 * var(--pad));
+    scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .taller::-webkit-scrollbar{display:none}
-  /* cada panel casi ocupa el viewport (solo deja un peek del siguiente para invitar al swipe)
-     y baja un poco su altura para que título+precio+CTA queden a la vista sin scroll extra */
-  .taller__panel{flex:0 0 94%!important;height:auto;min-height:360px;
-    scroll-snap-align:start;border:0;border-right:1px solid #000;position:relative}
-  .taller__panel.is-active{flex:0 0 94%!important}
-  .taller__content{padding:20px 20px 22px}
-  .taller__title{font-size:20px;line-height:1.15}
-  .taller__price{font-size:22px}
-  /* en el carrusel siempre se muestra el contenido como activo */
+  /* card producto = imagen arriba, contenido siempre visible abajo (sin necesidad de tap) */
+  .taller__panel{flex:0 0 84%!important;height:auto;min-height:0!important;
+    scroll-snap-align:center;border:0!important;background:var(--ink);position:relative;
+    display:flex!important;flex-direction:column;overflow:hidden}
+  .taller__panel.is-active{flex:0 0 84%!important}
+  /* imagen ocupa relación fija arriba */
+  .taller__img{position:relative!important;inset:auto!important;width:100%;height:auto;
+    aspect-ratio:4/3;object-fit:cover;transform:none!important;filter:none!important;display:block}
+  .taller__scrim{display:none}
+  /* barra roja arriba de la imagen */
+  .taller__panel::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;
+    background:var(--red);transform:none;z-index:2}
+  /* contenido siempre visible como bloque debajo de la imagen */
   .taller__panel .taller__big,.taller__panel .taller__vertical{display:none}
-  .taller__panel .taller__img{transform:none;filter:none}
-  .taller__panel .taller__content{opacity:1;transform:none;pointer-events:auto;visibility:visible}
-  .taller__panel::before{transform:scaleX(1)}
-  .taller__scrim{background:linear-gradient(180deg,rgba(17,17,17,.15) 0%,rgba(17,17,17,.85) 90%)}
+  .taller__content{position:relative!important;inset:auto!important;padding:16px 18px 20px;
+    opacity:1!important;transform:none!important;pointer-events:auto!important;visibility:visible!important;
+    background:var(--ink);color:#fff;display:flex;flex-direction:column;gap:8px;flex:1}
+  .taller__pos{font-size:10px;color:var(--red);letter-spacing:.14em;margin:0}
+  .taller__title{font-size:16px;line-height:1.25;color:#fff;margin:0}
+  .taller__fit{font-size:12px;color:#B8B8BC;font-family:var(--mono);letter-spacing:.02em}
+  .taller__price-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+    margin-top:auto;padding-top:8px;flex-wrap:wrap}
+  .taller__price{font-size:20px;color:#fff;font-weight:900}
+  .taller__stock{font-family:var(--mono);font-size:10px;color:#B8B8BC;letter-spacing:.08em}
+  .taller__cta{margin-top:10px;display:flex;gap:8px;align-items:center}
+  .taller__go{flex:1;font-size:11px;padding:10px 14px}
+  .taller__wa{flex:0 0 auto;width:40px;height:40px}
 
-  .taller-foot{grid-template-columns:auto 1fr;gap:14px;padding:16px}
+  /* pie del carrusel: contador + progreso + navs, layout limpio */
+  .taller-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:16px var(--pad);border-top:1px solid rgba(255,255,255,.06);margin-top:6px;flex-wrap:wrap}
+  .taller-counter{font-family:var(--mono);font-size:14px;color:#fff;font-weight:800;letter-spacing:.02em}
+  .taller-pages{gap:8px}
   .taller-hint{display:none}
 }
 
@@ -997,11 +1021,14 @@ h1,h2,h3{margin:0;letter-spacing:-.03em;line-height:1.02;font-weight:900}
      con flex:1 la lista colapsaba a 0px. flex:0 0 auto + min-height explícito
      asegura que las tarjetas de los próximos vehículos se vean. */
   .dh-thumbs{flex:0 0 auto;min-height:96px;flex-direction:row;overflow-x:auto;overflow-y:hidden;
-    padding-bottom:6px;scroll-snap-type:x mandatory;gap:10px}
+    padding-bottom:6px;scroll-snap-type:x mandatory;gap:10px;position:relative;z-index:1}
   .dh-thumb{flex:0 0 260px;scroll-snap-align:start;grid-template-columns:72px 1fr auto;gap:10px}
   .dh-thumb__img{width:72px;height:56px}
   .dh-side__label{padding-bottom:8px}
-  .dh-foot{grid-template-columns:auto 1fr auto;gap:14px}
+  /* el pie del carrusel tiene que estar bien separado y por debajo de los thumbs
+     para no tapar la selección de próximas unidades */
+  .dh-foot{grid-template-columns:auto 1fr auto;gap:14px;margin-top:28px;position:relative;z-index:0;
+    padding-top:12px;border-top:1px solid rgba(255,255,255,.06)}
   .dh-hint{display:none}
 }
 @media (max-width:560px){
