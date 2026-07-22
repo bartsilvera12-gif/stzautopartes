@@ -665,11 +665,11 @@ function initDesarmeHome(){
   const hero     = $('#dh-hero');
   const heroImg  = $('#dh-hero-img');
   const heroCode = $('#dh-hero-code');
-  const heroBadge= $('#dh-hero-badge');
+  const heroBadge= null;   /* badge removido del DOM: se dejan las refs en null para no romper el flujo */
   const heroKick = $('#dh-hero-kicker');
   const heroTit  = $('#dh-hero-title');
   const heroMono = $('#dh-hero-mono');
-  const heroPcs  = $('#dh-hero-pieces');
+  const heroPcs  = null;   /* stat de "disponibles" removida del DOM */
   const heroYear = $('#dh-hero-year');
   const thumbs   = $('#dh-thumbs');
   const sideCnt  = $('#dh-side-cnt');
@@ -748,12 +748,9 @@ function initDesarmeHome(){
     hero.setAttribute('aria-label', u.name + ' ' + u.year + ', código ' + u.code);
 
     heroCode.textContent  = 'UNIDAD ' + u.code;
-    heroBadge.className   = 'dh-hero__badge ' + badgeClass;
-    heroBadge.textContent = status;
     heroKick.textContent  = String(i + 1).padStart(2,'0') + ' · Recién ingresado';
     heroTit.textContent   = u.name + ' · ' + u.year;
     heroMono.textContent  = 'Motor ' + u.engine + ' · Caja ' + u.gearbox;
-    heroPcs.textContent   = u.pieces;
     heroYear.textContent  = u.year;
 
     if (reduced || heroImg.getAttribute('src') === src){
@@ -1909,11 +1906,6 @@ function initDesarme(){
       <div class="us-kicker">Unidad ${u.code}</div>
       <div class="us-title">${esc(u.name)} · ${u.year}</div>
       <div class="us-mono">${esc(u.engine)} · ${esc(u.gearbox)}</div>
-
-      <div class="us-divider"></div>
-
-      <div class="us-count"><b>${u.pieces}</b><span>disponibles</span></div>
-      <div class="us-status ${u.status === 'low' ? 'low' : 'ok'}">${u.status === 'low' ? 'Pocas unidades' : 'Activo · disponibles'}</div>
 
       <div class="us-divider"></div>
 
