@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STZ AutoPartes · Repuestos nuevos, usados originales y recuperados</title>
+<meta name="description" content="Autopartes nuevas, usadas originales y recuperadas en Presidente Franco, Alto Paraná. Fotografía real, procedencia declarada y envíos a todo Paraguay.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+</head>
+<body data-page="home">
+
+<div id="site-header"></div>
+
+<main>
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <img class="hero-bg" src="assets/img/fotos/hero.jpg"
+         alt="Vehículo en desarme dentro del depósito de STZ AutoPartes" fetchpriority="high">
+    <div class="hero-scrim"></div>
+
+    <div class="hero-inner">
+      <p class="hero-eyebrow">Autopartes nuevas, usadas y recuperadas</p>
+
+      <h1>La pieza correcta.<br><em>Confianza</em> para<br>volver a rodar.</h1>
+
+      <p class="hero-desc">Encontrá repuestos por pieza, vehículo o código OEM, con información clara sobre su estado y procedencia.</p>
+
+      <form class="hero-search" action="catalogo.html" method="get">
+        <div class="hero-search-row">
+          <input id="hero-search" name="q" placeholder="Ej.: faro Toyota Vitz 2010 o código OEM" aria-label="Buscar repuestos">
+          <button type="submit">Buscar repuesto</button>
+        </div>
+
+      </form>
+
+      <div class="hero-actions">
+        <a class="btn-hero" href="desarme.html">Ver vehículos en desarme</a>
+        <a class="btn-hero" id="hero-wa" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.1-.2 0-.4.1-.5l.4-.5c.1-.2.2-.3.3-.5v-.5l-.8-1.9c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.7.7-1 1.6-.9 2.5a7 7 0 0 0 1.5 3.1 9.4 9.4 0 0 0 4.6 3.3c1.1.4 1.9.4 2.5.3.6-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
+          Consultar por WhatsApp
+        </a>
+      </div>
+
+      <ul class="hero-facts">
+        <li>Nuevas</li>
+        <li>Usadas originales</li>
+        <li>Recuperadas verificadas</li>
+        <li>Envíos a todo el país</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="hero-fade" aria-hidden="true"></div>
+
+  <!-- ================= CATEGORÍAS ================= -->
+  <section class="section" id="categorias">
+    <header class="cat-head">
+      <div class="cat-head__lead">
+        <div class="eyebrow">Categorías</div>
+        <h2 class="h-sec">Encontrá la pieza<br>por categoría.</h2>
+      </div>
+      <div class="cat-head__aside">
+        <p>Explorá repuestos nuevos, usados originales y recuperados verificados.</p>
+        <a class="cat-head__cta" href="catalogo.html">Ver catálogo completo →</a>
+      </div>
+    </header>
+
+    <div class="cat-mosaic" id="cat-mosaic">
+      <!-- se renderiza desde JS con las cantidades reales de STZ_CATEGORIES -->
+    </div>
+  </section>
+
+  <!-- ================= DESTACADOS · acordeón fotográfico ================= -->
+  <section class="section taller-sec" id="destacados" aria-labelledby="destacados-titulo">
+    <header class="taller-head">
+      <div class="taller-head__lead">
+        <div class="eyebrow">Destacados</div>
+        <h2 class="h-sec" id="destacados-titulo">Selección del taller.</h2>
+        <p class="taller-head__desc">Repuestos que merecen una segunda vuelta.</p>
+      </div>
+      <div class="taller-head__aside">
+        <div class="filter-row" id="home-filters" role="tablist" aria-label="Filtrar por condición">
+          <button class="chip on" data-cond="" type="button" role="tab" aria-selected="true">Todos</button>
+          <button class="chip" data-cond="nuevo" type="button" role="tab" aria-selected="false">Nuevos</button>
+          <button class="chip" data-cond="usado" type="button" role="tab" aria-selected="false">Usados originales</button>
+          <button class="chip" data-cond="recuperado" type="button" role="tab" aria-selected="false">Recuperados</button>
+        </div>
+        <a class="taller-head__cta" href="catalogo.html">Ver catálogo →</a>
+      </div>
+    </header>
+
+    <!-- avisos accesibles solo cuando el usuario cambia manualmente -->
+    <div class="sr-only" aria-live="polite" id="taller-live"></div>
+
+    <!-- acordeón fotográfico. Los paneles se rellenan desde JS. -->
+    <div class="taller" id="taller" role="tablist" aria-label="Productos destacados"></div>
+
+    <div class="taller-foot">
+      <div class="taller-foot__left">
+        <div class="taller-counter">
+          <span id="taller-count">01</span>
+          <span class="taller-counter__sep">/</span>
+          <span id="taller-total">04</span>
+        </div>
+        <div class="taller-pages" id="taller-pages" hidden>
+          <button class="taller-nav" type="button" data-nav="prev" aria-label="Página anterior">
+            <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 4l-6 6 6 6"/></svg>
+          </button>
+          <span class="taller-page-label"><span id="taller-page">1</span> / <span id="taller-page-total">1</span></span>
+          <button class="taller-nav" type="button" data-nav="next" aria-label="Página siguiente">
+            <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4l6 6-6 6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="taller-progress" aria-hidden="true">
+        <span id="taller-progress-bar"></span>
+      </div>
+      <div class="taller-hint" aria-hidden="true">Pasá el cursor para explorar</div>
+    </div>
+  </section>
+
+  <!-- ================= DESARME ================= -->
+  <section class="section dh-sec" id="desarme">
+    <div class="dh-head">
+      <div class="dh-head__lead">
+        <div class="eyebrow">Desarme · Patio</div>
+        <h2 class="dh-title">Últimos ingresos<br><em>al patio.</em></h2>
+        <p class="dh-sub">Vehículos reales, recién desarmados. Cada pieza trazable desde el ERP.</p>
+      </div>
+      <div class="dh-head__aside">
+        <div class="dh-count" id="dh-count-active">0 activas</div>
+        <a class="dh-cta" href="desarme.html">
+          <span>Ver todo el patio</span>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="dh-bento" id="dh-bento" role="region" aria-label="Vehículos en desarme">
+      <a class="dh-hero" id="dh-hero" href="#" aria-live="polite">
+        <img class="dh-hero__img" id="dh-hero-img" src="" alt="">
+        <div class="dh-hero__scrim" aria-hidden="true"></div>
+
+        <div class="dh-hero__topline">
+          <span class="dh-hero__code" id="dh-hero-code">—</span>
+          <span class="dh-hero__badge" id="dh-hero-badge">Disponible</span>
+        </div>
+
+        <div class="dh-hero__body">
+          <div class="dh-hero__kicker" id="dh-hero-kicker">01 · Recién ingresado</div>
+          <h3 class="dh-hero__title" id="dh-hero-title">—</h3>
+          <div class="dh-hero__mono" id="dh-hero-mono">—</div>
+
+          <div class="dh-hero__stats">
+            <div class="dh-stat">
+              <span class="dh-stat__num" id="dh-hero-pieces">0</span>
+              <span class="dh-stat__lbl">Piezas<br>disponibles</span>
+            </div>
+            <div class="dh-stat">
+              <span class="dh-stat__num" id="dh-hero-year">—</span>
+              <span class="dh-stat__lbl">Año de<br>modelo</span>
+            </div>
+            <div class="dh-stat dh-stat--wide">
+              <span class="dh-stat__lbl">Origen</span>
+              <span class="dh-stat__val">Patio STZ · Ciudad del Este</span>
+            </div>
+          </div>
+
+          <span class="dh-hero__cta">
+            <span>Explorar vehículo</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+        </div>
+      </a>
+
+      <aside class="dh-side">
+        <div class="dh-side__label">
+          <span>Próximas unidades</span>
+          <span class="dh-side__cnt" id="dh-side-cnt">0</span>
+        </div>
+        <ul class="dh-thumbs" id="dh-thumbs" role="listbox" aria-label="Elegir vehículo"></ul>
+      </aside>
+    </div>
+
+    <div class="dh-foot">
+      <div class="dh-page">
+        <span id="dh-page-current">01</span>
+        <span class="dh-page__sep">/</span>
+        <span id="dh-page-total">00</span>
+      </div>
+      <div class="dh-progress" aria-hidden="true"><span id="dh-progress-bar"></span></div>
+      <div class="dh-nav">
+        <button class="dh-nav-btn" id="dh-prev" type="button" aria-label="Vehículo anterior">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+        </button>
+        <button class="dh-nav-btn dh-nav-btn--primary" id="dh-next" type="button" aria-label="Siguiente vehículo">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+      <div class="dh-hint">Flechas ← → para navegar</div>
+    </div>
+  </section>
+
+  <!-- ================= CONFIANZA ================= -->
+  <section class="section gray trust" id="confianza">
+    <div class="trust__lead">
+      <div class="eyebrow">Confianza</div>
+      <h2 class="h-sec">Cómo trabajamos<br>con las piezas.</h2>
+      <p class="trust__intro">Comprar una pieza usada requiere información clara. Explicamos el estado real y la procedencia de cada unidad. Reutilizar autopartes también es una decisión responsable.</p>
+      <a class="trust__cta" href="catalogo.html">Ver piezas verificadas →</a>
+
+      <div class="trust__car finder-car enter" role="img" aria-label="Vista lateral de un sedán">
+        <img class="finder-car__body" src="assets/img/fotos/finder-car-body-aligned.png" alt="" width="780" height="245" decoding="async">
+      </div>
+    </div>
+
+    <ul class="trust__grid">
+      <li class="trust__item">
+        <span class="trust__num">01</span>
+        <svg class="trust__icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 4H8a2 2 0 0 0-2 2v20l6-3 6 3V6a2 2 0 0 0-2-2Z"/><path d="M26 8v20l-4-2"/>
+        </svg>
+        <h3>Procedencia declarada</h3>
+        <p>Cada pieza usada muestra la unidad de desarme de origen y su historial verificable.</p>
+      </li>
+      <li class="trust__item">
+        <span class="trust__num">02</span>
+        <svg class="trust__icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 10h5l2-3h10l2 3h5v16H4z"/><circle cx="16" cy="17" r="5"/>
+        </svg>
+        <h3>Fotografía real</h3>
+        <p>Mostramos el desgaste y los detalles reales de cada pieza, sin edición ni retoques.</p>
+      </li>
+      <li class="trust__item">
+        <span class="trust__num">03</span>
+        <svg class="trust__icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 6h22v16H15l-6 5v-5H5z"/><path d="M11 12h10M11 16h6"/>
+        </svg>
+        <h3>Asesoramiento</h3>
+        <p>Te ayudamos a confirmar el repuesto correcto antes de comprar. Preguntá lo que necesites.</p>
+      </li>
+      <li class="trust__item">
+        <span class="trust__num">04</span>
+        <svg class="trust__icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 26c8 0 20-4 20-20 0 0-14 0-18 6-2 3-2 8 0 12M6 26c1-6 5-10 10-12"/>
+        </svg>
+        <h3>Reutilización responsable</h3>
+        <p>Menos residuos y opciones más accesibles para tu vehículo. Comprar usado también cuida.</p>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ================= VENDÉ TU VEHÍCULO ================= -->
+  <section class="dark-sec" id="vender">
+    <div class="corner"></div>
+    <div class="dark-grid">
+      <div>
+        <div class="eyebrow">Compramos tu vehículo</div>
+        <h2>¿Tenés un vehículo chocado o con problemas mecánicos?</h2>
+        <p class="lead">Contanos qué vehículo tenés y nuestro equipo evaluará la propuesta. Trabajamos con unidades para desarme en todo el país.</p>
+      </div>
+
+      <form class="form-dark" id="quick-sell">
+        <div class="form-grid">
+          <div class="field"><label for="q-nombre">NOMBRE</label><input id="q-nombre" name="nombre" placeholder="Nombre completo" required></div>
+          <div class="field"><label for="q-tel">TELÉFONO</label><input id="q-tel" name="tel" placeholder="+595 …" required></div>
+          <div class="field"><label for="q-vehiculo">MARCA Y MODELO</label><input id="q-vehiculo" name="vehiculo" placeholder="Ej. Toyota Corolla" required></div>
+          <div class="field"><label for="q-anio">AÑO</label><input id="q-anio" name="anio" placeholder="Ej. 2011" inputmode="numeric"></div>
+          <div class="field full">
+            <label>ESTADO DEL VEHÍCULO</label>
+            <div class="pills" data-pills="estado">
+              <button class="pill on" type="button">Chocado</button>
+              <button class="pill" type="button">Falla mecánica</button>
+              <button class="pill" type="button">Sin motor</button>
+              <button class="pill" type="button">En desuso</button>
+              <button class="pill" type="button">Otro</button>
+            </div>
+          </div>
+          <div class="field full"><label for="q-ubic">UBICACIÓN</label><input id="q-ubic" name="ubicacion" placeholder="Ciudad / Departamento"></div>
+          <div class="field full"><label for="q-obs">OBSERVACIÓN</label><textarea id="q-obs" name="obs" placeholder="Contanos detalles del estado, kilometraje, papeles…"></textarea></div>
+        </div>
+        <button class="btn btn-red btn-block" type="submit" style="margin-top:24px">Solicitar evaluación →</button>
+        <p class="form-note">Tu solicitud llega directamente a nuestro equipo de compras.</p>
+        <div class="form-ok">Recibimos tu solicitud. Te contactamos dentro de las próximas 24 h hábiles.</div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ================= CONTACTO ================= -->
+  <section class="section" id="contacto">
+    <div class="split">
+      <div class="map-wrap">
+        <div class="map" id="stz-map" role="img" aria-label="Ubicación de los locales de STZ AutoPartes en Presidente Franco"></div>
+        <div class="map-legend" id="stz-map-legend"></div>
+      </div>
+
+      <div>
+        <div class="eyebrow">Ubicación y contacto</div>
+        <h2 class="h-sec" style="font-size:36px;margin-bottom:24px">Presidente Franco,<br>Alto Paraná.</h2>
+        <div class="contact-grid">
+          <div><span class="kicker">Horarios</span><b>Lun a Vie · 07:30–17:30<br>Sáb · 07:30–12:30</b></div>
+          <div><span class="kicker">Teléfono / WhatsApp</span><b>Consultas 24/7<br>por WhatsApp</b></div>
+          <div><span class="kicker">Envíos</span><b>A todo Paraguay<br>Retiro en local</b></div>
+          <div><span class="kicker">Redes</span><b>Instagram · Facebook<br>TikTok</b></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:32px;flex-wrap:wrap">
+          <a class="btn btn-red" id="wa-contacto" href="#" target="_blank" rel="noopener">Abrir WhatsApp →</a>
+          <a class="btn btn-ghost" href="https://www.google.com/maps/search/Presidente+Franco+Alto+Paran%C3%A1+Paraguay" target="_blank" rel="noopener">Ver mapa completo</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

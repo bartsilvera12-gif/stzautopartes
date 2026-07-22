@@ -1,0 +1,29 @@
+# Materiales de origen y adjuntos (no deployeables)
+uploads/
+*.zip
+*.psd
+*.ai
+
+# Config local del editor
+.claude/
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+.thumbnail
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Dependencies (por si se agregan)
+node_modules/

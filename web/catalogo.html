@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Repuestos · STZ AutoPartes</title>
+<meta name="description" content="Catálogo de repuestos nuevos, usados originales y recuperados con filtros por marca, modelo, año, condición y precio.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body data-page="catalogo">
+
+<div id="site-header"></div>
+
+<main>
+  <!-- HERO negro del catálogo -->
+  <section class="cat-hero">
+    <div class="cat-hero__deco" aria-hidden="true">
+      <!-- ilustración técnica: partes flotando en línea (faro, engranaje, rueda, conector) -->
+      <svg viewBox="0 0 620 220" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" preserveAspectRatio="xMidYMid meet">
+        <!-- faro -->
+        <path d="M20 50 L110 40 L150 70 L150 110 L110 130 L20 118 Z"/>
+        <path d="M35 62 L100 55 L130 75 L130 100 L100 115 L35 108 Z" opacity=".55"/>
+        <circle cx="80" cy="85" r="14"/>
+        <!-- engranaje 1 -->
+        <circle cx="230" cy="90" r="42"/>
+        <circle cx="230" cy="90" r="16"/>
+        <g><path d="M230 40 L230 30 M230 150 L230 140 M180 90 L170 90 M290 90 L280 90"/>
+           <path d="M195 55 L188 48 M265 55 L272 48 M195 125 L188 132 M265 125 L272 132"/></g>
+        <!-- engranaje 2 chico -->
+        <circle cx="330" cy="140" r="24"/>
+        <circle cx="330" cy="140" r="8"/>
+        <!-- rueda -->
+        <circle cx="460" cy="105" r="60"/>
+        <circle cx="460" cy="105" r="52"/>
+        <circle cx="460" cy="105" r="20"/>
+        <g><path d="M460 55 L460 155 M410 105 L510 105 M425 70 L495 140 M495 70 L425 140"/></g>
+        <!-- conector -->
+        <rect x="540" y="60" width="70" height="90" rx="4"/>
+        <rect x="548" y="72" width="14" height="18"/>
+        <rect x="568" y="72" width="14" height="18"/>
+        <rect x="588" y="72" width="14" height="18"/>
+        <rect x="548" y="98" width="14" height="18"/>
+        <rect x="568" y="98" width="14" height="18"/>
+        <rect x="588" y="98" width="14" height="18"/>
+      </svg>
+    </div>
+    <div class="cat-hero__inner">
+      <div class="cat-hero__lead">
+        <div class="eyebrow">Catálogo de repuestos</div>
+        <h1>Encontrá la pieza exacta.</h1>
+        <p>Buscá por pieza, vehículo o código OEM.</p>
+      </div>
+      <form class="cat-searchbox" id="cat-form" onsubmit="return false" role="search">
+        <svg class="cat-searchbox__icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="9" cy="9" r="6"/><path d="M14 14l4 4"/>
+        </svg>
+        <input id="cat-search" placeholder="Buscá por pieza, vehículo o código OEM" aria-label="Buscar repuestos" autocomplete="off">
+        <button class="cat-searchbox__clear" id="cat-search-clear" type="button" aria-label="Limpiar búsqueda" hidden>
+          <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg>
+        </button>
+        <button class="cat-searchbox__submit" type="submit">Buscar <span aria-hidden="true">→</span></button>
+      </form>
+    </div>
+  </section>
+
+  <div class="crumbs">
+    <div>Home · Repuestos · <b id="crumb-cat">Todas las categorías</b></div>
+    <div class="crumbs__right">
+      <b id="result-count">0 resultados</b>
+      <select id="sort" aria-label="Ordenar por">
+        <option value="rel">Relevancia</option>
+        <option value="asc">Precio ↑</option>
+        <option value="desc">Precio ↓</option>
+        <option value="new">Novedades</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="active-filters-bar">
+    <span class="active-filters-bar__label">Filtros activos:</span>
+    <div class="active-filters" id="active-filters"></div>
+  </div>
+
+  <button class="filters-toggle only-mobile" type="button" id="filters-toggle" style="display:none">Filtros <span>+</span></button>
+
+  <div class="catalog">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar__head">
+        <h3>Filtrar repuestos</h3>
+        <button class="sidebar__clear" type="button" id="clear-filters">Limpiar filtros</button>
+      </div>
+      <div class="fgroup">
+        <h4>Categoría</h4>
+        <div id="f-categorias"></div>
+      </div>
+      <div class="fgroup">
+        <h4>Marca</h4>
+        <div id="f-marcas"></div>
+      </div>
+      <div class="fgroup">
+        <h4>Año</h4>
+        <div class="range">
+          <input type="number" id="f-desde" placeholder="Desde" inputmode="numeric">
+          <input type="number" id="f-hasta" placeholder="Hasta" inputmode="numeric">
+        </div>
+      </div>
+      <div class="fgroup">
+        <h4>Condición</h4>
+        <div id="f-condicion">
+          <label><span><input type="checkbox" value="nuevo"> Nuevo</span></label>
+          <label><span><input type="checkbox" value="usado"> Usado original</span></label>
+          <label><span><input type="checkbox" value="recuperado"> Recuperado verificado</span></label>
+        </div>
+      </div>
+      <div class="fgroup">
+        <h4>Precio ₲</h4>
+        <label for="f-precio" class="kicker">Hasta <span id="precio-val">5.000.000</span></label>
+        <input type="range" id="f-precio" min="45000" max="5000000" step="5000" value="5000000" style="width:100%;accent-color:var(--red);margin-top:10px">
+      </div>
+      <div class="fgroup">
+        <h4>Disponibilidad</h4>
+        <div id="f-stock">
+          <label><span><input type="checkbox" value="stock"> En stock</span></label>
+          <label><span><input type="checkbox" value="ask"> Consultar</span></label>
+        </div>
+      </div>
+    </aside>
+
+    <div class="results">
+      <div class="results-grid" id="results-grid"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:24px;padding-top:20px;border-top:1px solid var(--line)">
+        <div class="kicker" id="pagination-info">—</div>
+        <a class="btn btn-ghost btn-sm" href="index.html#categorias">Ver categorías</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="helpbar">
+    <div>
+      <b>¿No encontrás lo que buscás?</b>
+      <p>Consultanos directamente por WhatsApp con la información de tu vehículo.</p>
+    </div>
+    <a class="btn btn-wa" id="wa-help" href="#" target="_blank" rel="noopener">Consultar por WhatsApp →</a>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vendé tu vehículo · STZ AutoPartes</title>
+<meta name="description" content="Compramos vehículos chocados, con fallas mecánicas o en desuso para desarme. Enviá los datos y te contactamos con una propuesta.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body data-page="vender">
+
+<div id="site-header"></div>
+
+<main>
+  <section class="sell-hero">
+    <div class="corner" style="border-top-width:200px;border-left-width:300px"></div>
+    <div class="eyebrow">Compramos tu vehículo</div>
+    <h1>¿Tenés un vehículo chocado o con problemas mecánicos?</h1>
+    <p>Contanos qué vehículo tenés y nuestro equipo evaluará la propuesta. Trabajamos con unidades para desarme en todo el país.</p>
+  </section>
+
+  <section class="sell-body">
+    <div class="wizard">
+      <span class="on">01 · Datos</span>
+      <span>02 · Fotografías</span>
+      <span>03 · Confirmación</span>
+    </div>
+
+    <form id="sell-form">
+      <div class="form-grid">
+        <div class="field"><label for="s-nombre">NOMBRE Y APELLIDO *</label><input id="s-nombre" name="nombre" placeholder="María Fernández" required></div>
+        <div class="field"><label for="s-tel">TELÉFONO / WHATSAPP *</label><input id="s-tel" name="tel" placeholder="+595 981 000 000" required></div>
+        <div class="field"><label for="s-marca">MARCA *</label><input id="s-marca" name="marca" placeholder="Toyota" required></div>
+        <div class="field"><label for="s-modelo">MODELO *</label><input id="s-modelo" name="modelo" placeholder="Corolla XEi" required></div>
+        <div class="field"><label for="s-anio">AÑO *</label><input id="s-anio" name="anio" placeholder="2011" inputmode="numeric" required></div>
+        <div class="field"><label for="s-ubic">UBICACIÓN (CIUDAD / DPTO) *</label><input id="s-ubic" name="ubicacion" placeholder="Ciudad del Este · Alto Paraná" required></div>
+
+        <div class="field full">
+          <label>ESTADO DEL VEHÍCULO *</label>
+          <div class="pills" data-pills="estado">
+            <button class="pill on" type="button">Chocado</button>
+            <button class="pill" type="button">Falla mecánica</button>
+            <button class="pill" type="button">Sin motor</button>
+            <button class="pill" type="button">Sin caja</button>
+            <button class="pill" type="button">En desuso</button>
+            <button class="pill" type="button">Otro</button>
+          </div>
+        </div>
+
+        <div class="field full">
+          <label>FOTOGRAFÍAS DEL VEHÍCULO</label>
+          <div class="uploads" id="uploads">
+            <label class="slot">FRENTE<i>+</i><input type="file" accept="image/*" hidden></label>
+            <label class="slot">LATERAL<i>+</i><input type="file" accept="image/*" hidden></label>
+            <label class="slot">TABLERO<i>+</i><input type="file" accept="image/*" hidden></label>
+            <label class="slot">MOTOR<i>+</i><input type="file" accept="image/*" hidden></label>
+            <label class="slot">DAÑO 1<i>+</i><input type="file" accept="image/*" hidden></label>
+            <label class="slot">DAÑO 2<i>+</i><input type="file" accept="image/*" hidden></label>
+          </div>
+          <div class="form-note" style="margin-top:8px">Máximo 6 imágenes · hasta 5 MB cada una</div>
+        </div>
+
+        <div class="field full">
+          <label for="s-obs">OBSERVACIÓN</label>
+          <textarea id="s-obs" name="obs" placeholder="Contanos detalles del estado, kilometraje aproximado, papeles al día, si arranca, si tiene motor, etc."></textarea>
+        </div>
+      </div>
+
+      <div class="form-foot">
+        <p class="form-note">Tu solicitud llega al equipo de compras · sin registro</p>
+        <button class="btn btn-red" type="submit">Solicitar evaluación →</button>
+      </div>
+      <div class="form-ok">
+        <b>Solicitud enviada.</b> Nuestro equipo de compras te va a contactar dentro de las próximas 24 h hábiles.
+        También podés adelantar la consulta por <a id="wa-sell" href="#" target="_blank" rel="noopener" style="color:var(--red);font-weight:700">WhatsApp →</a>
+      </div>
+    </form>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
