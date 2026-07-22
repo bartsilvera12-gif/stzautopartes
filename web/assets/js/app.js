@@ -767,6 +767,25 @@ function initDesarmeHome(){
     setTimeout(swap, 200);
   };
 
+  /* Desplaza la miniatura dentro de su propia lista, sin tocar el scroll de la página.
+     scrollIntoView() —aun con block:'nearest'— también mueve los ancestros scrollables,
+     así que con la auto-rotación la página saltaba sola hasta el bento cada 3s. */
+  const scrollThumbIntoView = (t) => {
+    const cr = thumbs.getBoundingClientRect();
+    const tr = t.getBoundingClientRect();
+    let dy = 0, dx = 0;
+    if (tr.top < cr.top)          dy = tr.top - cr.top;
+    else if (tr.bottom > cr.bottom) dy = tr.bottom - cr.bottom;
+    if (tr.left < cr.left)        dx = tr.left - cr.left;
+    else if (tr.right > cr.right)   dx = tr.right - cr.right;
+    if (!dx && !dy) return;
+    thumbs.scrollTo({
+      top: thumbs.scrollTop + dy,
+      left: thumbs.scrollLeft + dx,
+      behavior: reduced ? 'auto' : 'smooth'
+    });
+  };
+
   const setActive = (idx) => {
     idx = Math.max(0, Math.min(total - 1, idx));
     if (idx === active && heroImg.getAttribute('src')) return;
@@ -777,10 +796,8 @@ function initDesarmeHome(){
     if (t){
       t.classList.add('is-active');
       t.setAttribute('aria-selected','true');
-      /* scroll thumb en vista si hay overflow */
-      try {
-        t.scrollIntoView({ block:'nearest', inline:'nearest', behavior: reduced ? 'auto' : 'smooth' });
-      } catch(_){}
+      /* scroll thumb en vista si hay overflow (solo dentro de la lista) */
+      try { scrollThumbIntoView(t); } catch(_){}
     }
     renderHero(units[active], active);
     updateChrome();
