@@ -1026,8 +1026,9 @@ h1,h2,h3{margin:0;letter-spacing:-.03em;line-height:1.02;font-weight:900}
   .dh-side__label{padding-bottom:8px}
   /* el pie del carrusel bien separado y en un bloque aparte para que la barra roja
      y las flechas no se encimen con los thumbs */
-  .dh-foot{grid-template-columns:auto 1fr auto;gap:14px;margin-top:40px;position:relative;z-index:1;
-    padding:16px 0 0;border-top:1px solid rgba(255,255,255,.08)}
+  /* separación grande para que la barra roja del progreso no toque los thumbs */
+  .dh-foot{grid-template-columns:auto 1fr auto;gap:14px;margin-top:64px;position:relative;z-index:1;
+    padding:20px 0 0;border-top:1px solid rgba(255,255,255,.08)}
   .dh-hint{display:none}
 }
 @media (max-width:560px){
@@ -2388,11 +2389,18 @@ body[data-page="vender"] main::after{
   .tabbar{
     display:grid;grid-template-columns:repeat(4,1fr);
     position:fixed!important;bottom:0;left:0;right:0;z-index:90;
+    width:100%;max-width:100vw;box-sizing:border-box;
     transform:translateZ(0);will-change:transform;
-    background:#fff;border-top:1px solid var(--line);padding:8px 0 max(8px,env(safe-area-inset-bottom));
-    font-family:var(--mono);font-size:10px;text-align:center;
+    background:#fff;border-top:1px solid var(--line);
+    padding:8px env(safe-area-inset-right,0) max(8px,env(safe-area-inset-bottom)) env(safe-area-inset-left,0);
+    font-family:var(--mono);font-size:10px;text-align:center;overflow:hidden;
   }
-  .tabbar a,.tabbar button{color:var(--gray);background:0;border:0;cursor:pointer;font-family:var(--mono);font-size:10px;line-height:1.6}
+  .tabbar a,.tabbar button{
+    color:var(--gray);background:0;border:0;cursor:pointer;
+    font-family:var(--mono);font-size:10px;line-height:1.6;
+    min-width:0;padding:0 2px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-decoration:none;overflow:hidden;text-overflow:clip;white-space:nowrap;
+  }
   .tabbar i{display:block;font-style:normal;font-size:14px}
   .tabbar .on{color:var(--red);font-weight:700}
   body{padding-bottom:64px}
