@@ -1532,7 +1532,6 @@ function initProduct(){
           <dt>Código interno</dt><dd class="mono">${p.internal}</dd>
           <dt>Lado / Posición</dt><dd>${esc(p.side)}</dd>
           <dt>Procedencia</dt><dd>${p.unit ? 'Unidad de desarme ' + p.unit : 'Pieza nueva de proveedor'}</dd>
-          <dt>Compatibilidad</dt><dd><div class="compat">${p.compat.map(([t,ok]) => `<span class="${ok ? '' : 'maybe'}">${ok ? '✓' : '?'} ${esc(t)}</span>`).join('')}</div></dd>
         </dl>
 
         <div style="margin-top:20px">
@@ -1548,8 +1547,9 @@ function initProduct(){
           </div>
           <button class="btn btn-dark" type="button" id="add-cart">Agregar al carrito →</button>
         </div>
-        <a class="btn btn-ghost btn-block pd-inline-wa" style="margin-top:8px" href="${waLink('Hola STZ, consulto por ' + p.id + ' — ' + p.name)}" target="_blank" rel="noopener">
-          <span class="dot dot-green"></span>Consultar por WhatsApp
+        <a class="btn btn-wa-solid btn-block" style="margin-top:10px" href="${waLink('Hola STZ, consulto por ' + p.id + ' — ' + p.name)}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.1-.2 0-.4.1-.5l.4-.5c.1-.2.2-.3.3-.5v-.5l-.8-1.9c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.7.7-1 1.6-.9 2.5a7 7 0 0 0 1.5 3.1 9.4 9.4 0 0 0 4.6 3.3c1.1.4 1.9.4 2.5.3.6-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
+          <span>Consultar por WhatsApp</span>
         </a>
 
         <div class="pd-meta"><span>Retiro en local · gratis</span><span>Envío a todo Paraguay</span></div>

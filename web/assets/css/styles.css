@@ -68,6 +68,17 @@ h1,h2,h3{margin:0;letter-spacing:-.03em;line-height:1.02;font-weight:900}
 .btn-ghost:hover{background:var(--ink);color:#fff}
 .btn-wa{background:var(--green);color:#fff}
 .btn-wa:hover{filter:brightness(.92)}
+/* botón WhatsApp destacado en verde con ícono real (ficha de producto) */
+.btn-wa-solid{
+  display:inline-flex;align-items:center;justify-content:center;gap:12px;
+  background:#25D366;color:#fff;border:0;padding:14px 22px;font-weight:800;font-size:13px;
+  letter-spacing:.06em;text-transform:uppercase;text-decoration:none;cursor:pointer;
+  transition:background .18s ease, transform .18s ease, box-shadow .18s ease;
+  box-shadow:0 4px 14px rgba(37,211,102,.28);
+}
+.btn-wa-solid:hover{background:#1DA851;transform:translateY(-1px);box-shadow:0 6px 18px rgba(37,211,102,.32)}
+.btn-wa-solid:active{transform:translateY(0)}
+.btn-wa-solid svg{flex:0 0 auto}
 .btn-sm{padding:10px 14px;font-size:12px}
 .btn-block{width:100%}
 .dot{width:8px;height:8px;border-radius:50%;background:currentColor;display:inline-block}
@@ -522,6 +533,9 @@ h1,h2,h3{margin:0;letter-spacing:-.03em;line-height:1.02;font-weight:900}
 .filter-row{display:flex;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:11px}
 .chip{padding:8px 14px;background:#fff;color:var(--ink);border:1px solid var(--line-2);letter-spacing:.1em;cursor:pointer;text-transform:uppercase}
 .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+/* variantes de etiqueta: chip-short se activa solo en móvil (vía media query) */
+.chip-short{display:none}
+.chip-long{display:inline}
 
 /* ============================================================
    DESTACADOS · acordeón fotográfico (Selección del taller)
@@ -676,14 +690,14 @@ h1,h2,h3{margin:0;letter-spacing:-.03em;line-height:1.02;font-weight:900}
 @media (max-width:760px){
   .taller-head{grid-template-columns:1fr;padding-bottom:20px;padding-right:0}
   .taller-head__aside{align-items:flex-start;width:100%;gap:10px}
-  /* fila de filtros: scroll horizontal con edge padding suficiente para que el último chip
-     (RECUPERADOS) se vea entero antes del fade, con extra de espacio a la derecha */
-  .taller-head__aside .filter-row{overflow-x:auto;flex-wrap:nowrap;padding:0 32px 6px var(--pad);
-    margin:0 calc(-1 * var(--pad));-webkit-overflow-scrolling:touch;gap:18px;
-    scroll-snap-type:x proximity;scrollbar-width:none;}
-  .taller-head__aside .filter-row::-webkit-scrollbar{display:none}
-  .taller-head__aside .filter-row .chip{flex:0 0 auto;font-size:11px;letter-spacing:.1em;padding:6px 2px}
-  .taller-head__cta{align-self:flex-start;font-size:11px;margin-top:4px}
+  /* fila de filtros: usa las variantes cortas de los chips en móvil para que "RECUPERADOS"
+     no se corte y quede espacio para el CTA "Ver catálogo" del lado derecho */
+  .taller-head__aside .filter-row{display:flex;flex-wrap:nowrap;gap:14px;padding:0;margin:0;
+    justify-content:flex-start;align-items:center}
+  .taller-head__aside .filter-row .chip{flex:0 0 auto;font-size:11px;letter-spacing:.08em;padding:6px 2px}
+  .taller-head__aside .filter-row .chip-long{display:none}
+  .taller-head__aside .filter-row .chip-short{display:inline}
+  .taller-head__cta{align-self:flex-start;font-size:11px;margin-top:8px;padding-bottom:6px}
 
   /* --- carrusel de tarjetas de producto (rediseño móvil) --- */
   .taller{display:flex;flex-direction:row;height:auto;gap:12px;
@@ -692,33 +706,40 @@ h1,h2,h3{margin:0;letter-spacing:-.03em;line-height:1.02;font-weight:900}
     scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .taller::-webkit-scrollbar{display:none}
   /* card producto = imagen arriba, contenido siempre visible abajo (sin necesidad de tap).
-     Altura fija para que todas las cards tengan el mismo tamaño sin importar longitud del título. */
-  .taller__panel{flex:0 0 84%!important;height:520px!important;min-height:520px!important;
+     Altura automática: el flex row estira todas las cards a la más alta, así quedan
+     parejas sin el hueco muerto que dejaba la altura fija de 520px. */
+  .taller__panel{flex:0 0 86%!important;height:auto!important;min-height:0!important;
+    align-self:stretch;
     scroll-snap-align:center;border:0!important;background:var(--ink);position:relative;
     display:flex!important;flex-direction:column;overflow:hidden}
-  .taller__panel.is-active{flex:0 0 84%!important;height:520px!important}
-  /* imagen ocupa relación fija arriba */
+  .taller__panel.is-active{flex:0 0 86%!important;height:auto!important}
+  /* imagen ocupa relación fija arriba (más panorámica en móvil = menos alto) */
   .taller__img{position:relative!important;inset:auto!important;width:100%;height:auto;
-    aspect-ratio:4/3;object-fit:cover;transform:none!important;filter:none!important;display:block}
+    aspect-ratio:16/10;object-fit:cover;transform:none!important;filter:none!important;display:block}
   .taller__scrim{display:none}
   /* barra roja arriba de la imagen */
   .taller__panel::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;
     background:var(--red);transform:none;z-index:2}
   /* contenido siempre visible como bloque debajo de la imagen */
   .taller__panel .taller__big,.taller__panel .taller__vertical{display:none}
-  .taller__content{position:relative!important;inset:auto!important;padding:16px 18px 20px;
+  .taller__content{position:relative!important;inset:auto!important;padding:14px 16px 16px;
     opacity:1!important;transform:none!important;pointer-events:auto!important;visibility:visible!important;
-    background:var(--ink);color:#fff;display:flex;flex-direction:column;gap:8px;flex:1}
+    background:var(--ink);color:#fff;display:flex;flex-direction:column;gap:6px;flex:1}
   .taller__pos{font-size:10px;color:var(--red);letter-spacing:.14em;margin:0}
-  .taller__title{font-size:16px;line-height:1.25;color:#fff;margin:0}
-  .taller__fit{font-size:12px;color:#B8B8BC;font-family:var(--mono);letter-spacing:.02em}
-  .taller__price-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  /* título a 2 líneas máx. y compatibilidad a 1: alturas parejas sin desperdiciar alto */
+  .taller__title{font-size:15px;line-height:1.25;color:#fff;margin:0;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+    min-height:calc(1.25em * 2)}
+  .taller__fit{font-size:11.5px;line-height:1.4;color:#B8B8BC;font-family:var(--mono);letter-spacing:.02em;
+    display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+  .taller__price-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;
     margin-top:auto;padding-top:8px;flex-wrap:wrap}
-  .taller__price{font-size:20px;color:#fff;font-weight:900}
-  .taller__stock{font-family:var(--mono);font-size:10px;color:#B8B8BC;letter-spacing:.08em}
-  .taller__cta{margin-top:10px;display:flex;gap:8px;align-items:center}
-  .taller__go{flex:1;font-size:11px;padding:10px 14px}
-  .taller__wa{flex:0 0 auto;width:40px;height:40px}
+  .taller__price{font-size:20px;color:#fff;font-weight:900;white-space:nowrap}
+  .taller__stock{font-family:var(--mono);font-size:10px;color:#B8B8BC;letter-spacing:.06em;
+    white-space:nowrap}
+  .taller__cta{margin-top:8px;display:flex;gap:8px;align-items:center}
+  .taller__go{flex:1;font-size:11px;padding:10px 12px}
+  .taller__wa{flex:0 0 auto;width:38px;height:38px}
 
   /* pie del carrusel: contador + progreso + navs, layout limpio */
   .taller-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;
