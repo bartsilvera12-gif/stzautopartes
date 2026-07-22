@@ -918,7 +918,7 @@ function initDesarmeList(){
   const rowHTML = (u, i) => {
     const img = u.img ? ('assets/img/fotos/' + u.img) : FALLBACK_IMG;
     const status = STATUS_LABEL[u.status] || STATUS_LABEL.ok;
-    const wa = waLink(`Hola STZ, quiero consultar por la unidad ${u.code} (${u.name} ${u.year}).`);
+    const wa = waLink(`Hola STZ, quiero consultar por la unidad ${u.code} (${u.name} ${u.year}).` + (u.img ? `\nFoto: ${location.origin}/assets/img/fotos/${u.img}` : ''));
     return `
     <article class="dv-row" data-code="${esc(u.code)}" data-idx="${i}"
              data-href="desarme.html?u=${encodeURIComponent(u.code)}"
@@ -1087,7 +1087,7 @@ function initUnidadDetail(){
 
   const brand = brandOf(u);
   const catalogoHref = 'catalogo.html?' + new URLSearchParams({ marca: brand, anio: String(u.year) }).toString();
-  const wa = waLink(`Hola STZ, quiero consultar por la unidad ${u.code} (${u.name} ${u.year}).`);
+  const wa = waLink(`Hola STZ, quiero consultar por la unidad ${u.code} (${u.name} ${u.year}).` + (u.img ? `\nFoto: ${location.origin}/assets/img/fotos/${u.img}` : ''));
   const status = STATUS_LABEL[u.status] || STATUS_LABEL.ok;
 
   const multi = gallery.length > 1;
@@ -1551,7 +1551,7 @@ function initProduct(){
           </div>
           <button class="btn btn-dark" type="button" id="add-cart">Agregar al carrito →</button>
         </div>
-        <a class="btn btn-ghost btn-block pd-inline-wa" style="margin-top:8px" href="${waLink('Hola STZ, consulto por ' + p.id + ' — ' + p.name)}" target="_blank" rel="noopener">
+        <a class="btn btn-ghost btn-block pd-inline-wa" style="margin-top:8px" href="${waLink('Hola STZ, consulto por ' + p.id + ' — ' + p.name + (p.photos && p.photos[0] ? '\nFoto: ' + location.origin + '/assets/img/fotos/' + p.photos[0][0] : (p.img ? '\nFoto: ' + location.origin + '/assets/img/fotos/' + p.img : '')))}" target="_blank" rel="noopener">
           <span class="dot dot-green"></span>Consultar por WhatsApp
         </a>
 
@@ -2201,9 +2201,18 @@ function initCart(){
 }
 
 function waCartText(items, total, delivery){
+  const origin = location.origin;
+  const imgUrl = (p) => {
+    const f = (p.photos && p.photos[0] && p.photos[0][0]) || p.img;
+    return f ? (origin + '/assets/img/fotos/' + f) : '';
+  };
+  const lines = items.map(({product:p, qty}) => {
+    const url = imgUrl(p);
+    return `• ${qty} × ${p.id} — ${p.name} (${gs(p.price * qty)})` + (url ? `\n  Foto: ${url}` : '');
+  }).join('\n');
   return 'Hola STZ, quiero cerrar este pedido:\n' +
-    items.map(({product:p, qty}) => `• ${qty} × ${p.id} — ${p.name} (${gs(p.price * qty)})`).join('\n') +
-    `\nTotal: ${gs(total)}\nEntrega: ${delivery === 'retiro' ? 'Retiro en local' : 'Envío'}`;
+    lines +
+    `\n\nTotal: ${gs(total)}\nEntrega: ${delivery === 'retiro' ? 'Retiro en local' : 'Envío'}`;
 }
 
 /* ============================================================

@@ -1573,7 +1573,7 @@ h1,h2,h3{margin:0;letter-spacing:-.03em;line-height:1.02;font-weight:900}
 .site-footer{background:var(--ink);color:#F4F5F7;padding:60px var(--pad) 28px}
 .footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-bottom:36px;border-bottom:1px solid var(--dark-3)}
 .footer-logo{display:inline-block}
-.footer-logo img{display:block;height:56px;width:auto}
+.footer-logo img{display:block;height:38px;width:auto}
 .footer-grid p{font-size:13px;color:var(--dark-text);line-height:1.55;margin:20px 0 0;max-width:320px}
 .footer-col h4{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--dark-text);margin:0 0 16px;font-weight:400;text-transform:uppercase}
 .footer-col div{display:flex;flex-direction:column;gap:10px;font-size:13px;font-weight:500}
