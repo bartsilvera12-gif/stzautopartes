@@ -169,6 +169,7 @@ h1,h2,h3{margin:0;letter-spacing:-.03em;line-height:1.02;font-weight:900}
 }
 .drawer.open{transform:translateX(0)}
 .drawer-head{display:flex;justify-content:space-between;align-items:center;padding:20px;border-bottom:1px solid var(--dark-3)}
+.drawer-head .drawer-logo{height:36px;width:auto;display:block;object-fit:contain}
 .drawer-close{width:36px;height:36px;background:var(--red);border:0;color:#fff;font-size:20px;font-weight:800;cursor:pointer;display:grid;place-items:center}
 .drawer-body{padding:24px 20px 40px}
 .drawer-search{border:1px solid var(--dark-4);padding:14px 16px;display:flex;gap:10px;align-items:center;margin-bottom:24px}
@@ -1148,7 +1149,7 @@ h1,h2,h3{margin:0;letter-spacing:-.03em;line-height:1.02;font-weight:900}
   .dv-row__img{aspect-ratio:16/10;height:auto;min-height:0}
   .dv-row__img img{position:absolute}
   .dv-row__info{padding:20px 20px;grid-template-columns:1fr;gap:16px}
-  .dv-row__num{font-size:38px}
+  .dv-row__num{font-size:38px;line-height:1;padding-top:2px}
   .dv-row__actions{flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
   .dv-row__cta{padding:12px 18px}
   .dv-toolbar{padding:16px var(--pad) 0;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
@@ -2299,8 +2300,10 @@ body[data-page="vender"] main::after{
   /* sin fondo propio: hereda la transparencia de .site-header */
   .mobile-bar{display:flex;justify-content:space-between;align-items:center;padding:10px var(--pad);background:transparent}
   .mobile-bar .logo-img{height:38px}
-  .mobile-icons{display:flex;gap:16px;align-items:center;font-family:var(--mono);font-size:16px}
-  .mobile-icons button{background:0;border:0;padding:0;cursor:pointer;position:relative;font-size:16px;line-height:1}
+  .mobile-icons{display:flex;gap:14px;align-items:center;font-family:var(--mono);font-size:16px}
+  .mobile-icons button{background:0;border:0;padding:6px;cursor:pointer;position:relative;font-size:16px;line-height:1;
+    display:inline-flex;align-items:center;justify-content:center;min-width:40px;min-height:40px;color:inherit}
+  .mobile-icons .mobile-hamb svg{width:26px;height:26px;display:block}
   .mobile-icons .badge{position:absolute;top:-7px;right:-9px;background:var(--red);color:#fff;font-family:var(--mono);font-size:9px;padding:1px 4px}
 
   /* menos ancho: el velo se cierra para que el texto no pise el vehículo */

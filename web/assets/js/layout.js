@@ -155,16 +155,19 @@ function renderHeader(){
       <a class="logo" href="index.html" aria-label="STZ AutoPartes · inicio">${LOGO_IMG}</a>
       <div class="mobile-icons">
         <button type="button" onclick="location.href='carrito.html'" aria-label="Carrito">${CART_SVG}<span class="badge" data-cart-count>00</span></button>
-        <button type="button" data-open-menu aria-label="Menú">≡</button>
+        <button class="mobile-hamb" type="button" data-open-menu aria-label="Menú">
+          <svg viewBox="0 0 26 26" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M4 8h18M4 13h18M4 18h18"/>
+          </svg>
+        </button>
       </div>
     </div>
   </header>
 
   <div class="drawer" id="drawer" aria-hidden="true">
     <div class="drawer-head">
-      <a class="logo" href="index.html">
-        ${LOGO_SVG(true)}
-        <span class="logo-txt" style="color:#fff">STZ<span style="color:var(--red)">.</span></span>
+      <a class="logo" href="index.html" aria-label="STZ AutoPartes · inicio">
+        <img class="drawer-logo" src="assets/img/logo-stz-light.png" alt="STZ AutoPartes" width="535" height="296">
       </a>
       <button class="drawer-close" type="button" data-close-menu aria-label="Cerrar menú">×</button>
     </div>
