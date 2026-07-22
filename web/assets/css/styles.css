@@ -676,16 +676,14 @@ h1,h2,h3{margin:0;letter-spacing:-.03em;line-height:1.02;font-weight:900}
 @media (max-width:760px){
   .taller-head{grid-template-columns:1fr;padding-bottom:20px;padding-right:0}
   .taller-head__aside{align-items:flex-start;width:100%;gap:10px}
-  /* fila de filtros: scroll horizontal con edge padding para que el último chip no se corte
-     y una máscara de fade a la derecha que sugiera scroll */
-  .taller-head__aside .filter-row{overflow-x:auto;flex-wrap:nowrap;padding:0 var(--pad) 6px;
-    margin:0 calc(-1 * var(--pad));-webkit-overflow-scrolling:touch;gap:22px;
-    scroll-snap-type:x proximity;scrollbar-width:none;
-    -webkit-mask-image:linear-gradient(90deg,#000 0,#000 90%,transparent 100%);
-            mask-image:linear-gradient(90deg,#000 0,#000 90%,transparent 100%);}
+  /* fila de filtros: scroll horizontal con edge padding suficiente para que el último chip
+     (RECUPERADOS) se vea entero antes del fade, con extra de espacio a la derecha */
+  .taller-head__aside .filter-row{overflow-x:auto;flex-wrap:nowrap;padding:0 32px 6px var(--pad);
+    margin:0 calc(-1 * var(--pad));-webkit-overflow-scrolling:touch;gap:18px;
+    scroll-snap-type:x proximity;scrollbar-width:none;}
   .taller-head__aside .filter-row::-webkit-scrollbar{display:none}
-  .taller-head__aside .filter-row .chip{flex:0 0 auto;font-size:11px;letter-spacing:.12em;padding:6px 2px}
-  .taller-head__cta{align-self:flex-end;font-size:11px}
+  .taller-head__aside .filter-row .chip{flex:0 0 auto;font-size:11px;letter-spacing:.1em;padding:6px 2px}
+  .taller-head__cta{align-self:flex-start;font-size:11px;margin-top:4px}
 
   /* --- carrusel de tarjetas de producto (rediseño móvil) --- */
   .taller{display:flex;flex-direction:row;height:auto;gap:12px;
@@ -693,11 +691,12 @@ h1,h2,h3{margin:0;letter-spacing:-.03em;line-height:1.02;font-weight:900}
     margin:0 calc(-1 * var(--pad));
     scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .taller::-webkit-scrollbar{display:none}
-  /* card producto = imagen arriba, contenido siempre visible abajo (sin necesidad de tap) */
-  .taller__panel{flex:0 0 84%!important;height:auto;min-height:0!important;
+  /* card producto = imagen arriba, contenido siempre visible abajo (sin necesidad de tap).
+     Altura fija para que todas las cards tengan el mismo tamaño sin importar longitud del título. */
+  .taller__panel{flex:0 0 84%!important;height:520px!important;min-height:520px!important;
     scroll-snap-align:center;border:0!important;background:var(--ink);position:relative;
     display:flex!important;flex-direction:column;overflow:hidden}
-  .taller__panel.is-active{flex:0 0 84%!important}
+  .taller__panel.is-active{flex:0 0 84%!important;height:520px!important}
   /* imagen ocupa relación fija arriba */
   .taller__img{position:relative!important;inset:auto!important;width:100%;height:auto;
     aspect-ratio:4/3;object-fit:cover;transform:none!important;filter:none!important;display:block}
@@ -1020,15 +1019,15 @@ h1,h2,h3{margin:0;letter-spacing:-.03em;line-height:1.02;font-weight:900}
   /* la lista de thumbs vive dentro de .dh-side que en móvil tiene height:auto;
      con flex:1 la lista colapsaba a 0px. flex:0 0 auto + min-height explícito
      asegura que las tarjetas de los próximos vehículos se vean. */
-  .dh-thumbs{flex:0 0 auto;min-height:96px;flex-direction:row;overflow-x:auto;overflow-y:hidden;
-    padding-bottom:6px;scroll-snap-type:x mandatory;gap:10px;position:relative;z-index:1}
+  .dh-thumbs{flex:0 0 auto;min-height:100px;flex-direction:row;overflow-x:auto;overflow-y:hidden;
+    padding:0 0 8px;scroll-snap-type:x mandatory;gap:10px;position:relative;z-index:2}
   .dh-thumb{flex:0 0 260px;scroll-snap-align:start;grid-template-columns:72px 1fr auto;gap:10px}
   .dh-thumb__img{width:72px;height:56px}
   .dh-side__label{padding-bottom:8px}
-  /* el pie del carrusel tiene que estar bien separado y por debajo de los thumbs
-     para no tapar la selección de próximas unidades */
-  .dh-foot{grid-template-columns:auto 1fr auto;gap:14px;margin-top:28px;position:relative;z-index:0;
-    padding-top:12px;border-top:1px solid rgba(255,255,255,.06)}
+  /* el pie del carrusel bien separado y en un bloque aparte para que la barra roja
+     y las flechas no se encimen con los thumbs */
+  .dh-foot{grid-template-columns:auto 1fr auto;gap:14px;margin-top:40px;position:relative;z-index:1;
+    padding:16px 0 0;border-top:1px solid rgba(255,255,255,.08)}
   .dh-hint{display:none}
 }
 @media (max-width:560px){
@@ -2383,9 +2382,13 @@ body[data-page="vender"] main::after{
   .mobile-bar .logo-img{height:34px}
   .mobile-icons{gap:14px}
 
-  /* barra inferior */
+  /* barra inferior — fija al viewport, con hardware acceleration para que no se despegue
+     al scrollear en Chrome/Brave mobile. `transform:translateZ(0)` fuerza una capa
+     compositada que el browser mantiene fijada. */
   .tabbar{
-    display:grid;grid-template-columns:repeat(4,1fr);position:fixed;bottom:0;left:0;right:0;z-index:90;
+    display:grid;grid-template-columns:repeat(4,1fr);
+    position:fixed!important;bottom:0;left:0;right:0;z-index:90;
+    transform:translateZ(0);will-change:transform;
     background:#fff;border-top:1px solid var(--line);padding:8px 0 max(8px,env(safe-area-inset-bottom));
     font-family:var(--mono);font-size:10px;text-align:center;
   }

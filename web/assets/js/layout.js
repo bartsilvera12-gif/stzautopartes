@@ -269,7 +269,7 @@ function renderFooter(){
           <input type="email" placeholder="tu@correo.com" required aria-label="Correo electrónico">
           <button type="submit" aria-label="Suscribirse">→</button>
         </form>
-        <div class="mono" style="font-size:10px;color:var(--dark-text);margin-top:12px;letter-spacing:.06em">Piezas nuevas, unidades y ofertas.</div>
+        <div class="mono" style="font-size:10px;color:var(--dark-text);margin-top:12px;letter-spacing:.06em">Repuestos nuevos, unidades y ofertas.</div>
       </div>
     </div>
     <div class="footer-bottom">

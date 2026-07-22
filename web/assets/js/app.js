@@ -49,7 +49,7 @@ function renderCategorias(){
     const c = STZ_CATEGORIES.find(x => x.id === slot.id);
     if (!c) return '';
     const n = counts[c.id] || 0;
-    const label = n === 1 ? '1 pieza disponible' : `${n} piezas disponibles`;
+    const label = n === 1 ? '1 disponible' : `${n} disponibles`;
     return `<a class="cat-card cat-card--${slot.variant}" href="catalogo.html?cat=${c.id}">
       <img class="cat-card__img" src="assets/img/fotos/${c.img}" alt="${esc(c.ph || c.name)}" loading="lazy" decoding="async" width="800" height="500">
       <span class="cat-card__overlay"></span>
@@ -437,7 +437,7 @@ function initTaller(){
   function renderPanels(){
     const items = pageItems();
     if (!items.length){
-      root.innerHTML = '<div class="taller--empty">No hay piezas destacadas para este filtro.</div>';
+      root.innerHTML = '<div class="taller--empty">No hay repuestos destacados para este filtro.</div>';
       totalE.textContent = '00';
       countE.textContent = '00';
       if (progrBar) progrBar.style.width = '0%';
@@ -699,7 +699,7 @@ function initDesarmeHome(){
   }
 
   const FALLBACK_IMG = 'assets/img/fotos/unidad-lateral.jpg';
-  const STATUS_LABEL = { ok:'Disponible', low:'Últimas piezas', off:'Reservado' };
+  const STATUS_LABEL = { ok:'Disponible', low:'Últimas unidades', off:'Reservado' };
   const STATUS_CLASS = { ok:'', low:'is-low', off:'is-off' };
 
   /* Precarga suave */
@@ -880,7 +880,7 @@ function initDesarmeList(){
   if (!rows || typeof STZ_UNITS === 'undefined') return;
 
   const FALLBACK_IMG = 'assets/img/fotos/unidad-lateral.jpg';
-  const STATUS_LABEL = { ok:'Activo · piezas disponibles', low:'Pocas piezas', off:'Reservado' };
+  const STATUS_LABEL = { ok:'Activo · disponibles', low:'Pocas unidades', off:'Reservado' };
   const brandOf = u => (u.name || '').split(' ')[0] || '';
 
   /* Fuente única: STZ_UNITS (mismo array que usa el resto del sitio) */
@@ -935,8 +935,8 @@ function initDesarmeList(){
           <div class="dv-row__kicker">Unidad ${esc(u.code)}</div>
           <h3 class="dv-row__title">${esc(u.name)} · ${u.year}</h3>
           <div class="dv-row__mono">Motor ${esc(u.engine)} · Caja ${esc(u.gearbox)}</div>
-          <div class="dv-row__count ${u.status === 'low' ? 'low' : ''}">${u.pieces} piezas disponibles</div>
-          <p class="dv-row__desc">${esc(status)}. Fotografía real y piezas identificadas y trazables desde el ERP.</p>
+          <div class="dv-row__count ${u.status === 'low' ? 'low' : ''}">${u.pieces} disponibles</div>
+          <p class="dv-row__desc">${esc(status)}. Fotografía real y repuestos identificados y trazables desde el ERP.</p>
         </div>
         <div class="dv-row__actions">
           <span class="dv-row__cta">Explorar vehículo
@@ -1072,7 +1072,7 @@ function initUnidadDetail(){
   const u = getUnit(code) || STZ_UNITS[0];
 
   const FALLBACK_IMG = 'assets/img/fotos/unidad-lateral.jpg';
-  const STATUS_LABEL = { ok:'Activo · piezas disponibles', low:'Pocas piezas', off:'Reservado' };
+  const STATUS_LABEL = { ok:'Activo · disponibles', low:'Pocas unidades', off:'Reservado' };
   const brandOf = x => (x.name || '').split(' ')[0] || '';
   /* Galería: foto principal + extras opcionales en u.imgs[] */
   const gallery = [u.img, ...(Array.isArray(u.imgs) ? u.imgs : [])]
@@ -1146,7 +1146,7 @@ function initUnidadDetail(){
         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M20 12a8 8 0 1 1-3.9-6.9L20 4l-1.1 3.9A8 8 0 0 1 20 12Z"/></svg>
         Consultar por WhatsApp
       </a>
-      <a class="btn btn-ghost btn-block" href="${catalogoHref}" style="margin-top:8px">Ver piezas de esta unidad →</a>
+      <a class="btn btn-ghost btn-block" href="${catalogoHref}" style="margin-top:8px">Ver repuestos de esta unidad →</a>
 
       <div class="pd-meta"><span>Retiro en local · Presidente Franco</span><span>Envío a todo Paraguay</span></div>
     </div>`;
@@ -1584,7 +1584,7 @@ function initProduct(){
     .slice(0, 4);
   $('#pd-related').innerHTML = `
     <div class="eyebrow">Relacionados · compatibles</div>
-    <h2 style="font-size:22px;letter-spacing:-.02em;margin:8px 0 20px">${p.unit ? 'Piezas para la misma unidad' : 'Piezas de la misma familia'}</h2>
+    <h2 style="font-size:22px;letter-spacing:-.02em;margin:8px 0 20px">${p.unit ? 'Repuestos para la misma unidad' : 'Repuestos de la misma familia'}</h2>
     <div class="rel-grid">${rel.map(x => productCard(x, { compact:true })).join('')}</div>`;
 
   /* animación de aparición al hacer scroll para las cards relacionadas */
@@ -1912,8 +1912,8 @@ function initDesarme(){
 
       <div class="us-divider"></div>
 
-      <div class="us-count"><b>${u.pieces}</b><span>piezas disponibles</span></div>
-      <div class="us-status ${u.status === 'low' ? 'low' : 'ok'}">${u.status === 'low' ? 'Pocas piezas' : 'Activo · piezas disponibles'}</div>
+      <div class="us-count"><b>${u.pieces}</b><span>disponibles</span></div>
+      <div class="us-status ${u.status === 'low' ? 'low' : 'ok'}">${u.status === 'low' ? 'Pocas unidades' : 'Activo · disponibles'}</div>
 
       <div class="us-divider"></div>
 
@@ -1928,7 +1928,7 @@ function initDesarme(){
           </button>`).join('')}
       </div>
 
-      <a class="us-cta" href="#zone-detail">Ver las ${z.count} piezas del ${esc(z.name.toLowerCase())} →</a>
+      <a class="us-cta" href="#zone-detail">Ver ${z.count} de ${esc(z.name.toLowerCase())} →</a>
     `;
   };
 
@@ -1953,8 +1953,8 @@ function initDesarme(){
 
       <div class="callout" style="left:${cx}%;top:0;visibility:hidden">
         <div class="kicker">${String(z.n).padStart(2,'0')} · ${esc(z.name.toUpperCase())}</div>
-        <b>${z.count} piezas activas</b>
-        <a href="#zone-detail">Ver piezas →</a>
+        <b>${z.count} activas</b>
+        <a href="#zone-detail">Ver detalle →</a>
       </div>
 
       <div class="dd-foot">
@@ -1973,14 +1973,14 @@ function initDesarme(){
     $('#zone-detail').innerHTML = `
       <div>
         <div class="eyebrow">Zona ${z.n} · ${esc(z.name.toUpperCase())}</div>
-        <h3>${z.count} piezas disponibles</h3>
+        <h3>${z.count} disponibles</h3>
         <p>${esc(z.desc)}</p>
         <div class="zone-specs">
           <div><span class="kicker">Motor</span><b>${esc(u.engine)}</b></div>
           <div><span class="kicker">Caja</span><b>${esc(u.gearbox)}</b></div>
           <div><span class="kicker">Año</span><b>${u.year}</b></div>
         </div>
-        <a class="btn btn-ghost btn-block" style="margin-top:20px" href="${waLink('Hola STZ, consulto por piezas de la unidad ' + u.code + ' (' + u.name + ' ' + u.year + '), zona ' + z.name + '.')}" target="_blank" rel="noopener">Consultar esta zona</a>
+        <a class="btn btn-ghost btn-block" style="margin-top:20px" href="${waLink('Hola STZ, consulto por repuestos de la unidad' + u.code + ' (' + u.name + ' ' + u.year + '), zona ' + z.name + '.')}" target="_blank" rel="noopener">Consultar esta zona</a>
       </div>
       <div>
         ${parts.length ? `
@@ -2004,7 +2004,7 @@ function initDesarme(){
             </a>`).join('')}
           ${z.count > parts.length ? `
           <div class="zpart zpart--more">
-            <div class="kicker">+ ${z.count - parts.length} piezas más</div>
+            <div class="kicker">+ ${z.count - parts.length} más</div>
             <a href="${zoneCatalogUrl(u, z)}">Ver todas
               <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h11M11 5l5 5-5 5"/></svg>
             </a>
@@ -2013,15 +2013,15 @@ function initDesarme(){
         <div class="zone-empty">
           <div class="zone-empty__num">${String(z.n).padStart(2,'0')}</div>
           <div class="zone-empty__body">
-            <div class="kicker">Zona ${z.n} · ${esc(z.name.toUpperCase())} · ${z.count} piezas</div>
-            <h4>Todavía no publicamos las fichas de estas piezas.</h4>
+            <div class="kicker">Zona ${z.n} · ${esc(z.name.toUpperCase())} · ${z.count} disponibles</div>
+            <h4>Todavía no publicamos las fichas de estos repuestos.</h4>
             <p>Están cargadas en el ERP pero aún no las mostramos con detalle acá. Consultanos por WhatsApp con la pieza o el código de la unidad ${esc(u.code)} y te pasamos foto, precio y estado al instante.</p>
             <div class="zone-empty__cta">
-              <a class="btn btn-red" href="${waLink('Hola STZ, consulto por piezas de la zona ' + z.name + ' de la unidad ' + u.code + ' (' + u.name + ' ' + u.year + ').')}" target="_blank" rel="noopener">
+              <a class="btn btn-red" href="${waLink('Hola STZ, consulto por repuestos de la zona ' + z.name + ' de la unidad ' + u.code + ' (' + u.name + ' ' + u.year + ').')}" target="_blank" rel="noopener">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.1-.2 0-.4.1-.5l.4-.5c.1-.2.2-.3.3-.5v-.5l-.8-1.9c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.7.7-1 1.6-.9 2.5a7 7 0 0 0 1.5 3.1 9.4 9.4 0 0 0 4.6 3.3c1.1.4 1.9.4 2.5.3.6-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
                 Consultar por WhatsApp
               </a>
-              <a class="btn btn-ghost" href="${zoneCatalogUrl(u, z)}">Ver piezas de esta unidad →</a>
+              <a class="btn btn-ghost" href="${zoneCatalogUrl(u, z)}">Ver repuestos de esta unidad →</a>
             </div>
           </div>
         </div>`}
@@ -2110,8 +2110,8 @@ function initCart(){
       root.innerHTML = `
         <div class="cart-empty">
           <div class="eyebrow">Tu carrito</div>
-          <h2>Todavía no agregaste piezas.</h2>
-          <p>Buscá por pieza, vehículo o código OEM y agregá lo que necesites.</p>
+          <h2>Todavía no agregaste repuestos.</h2>
+          <p>Buscá por repuesto, vehículo o código OEM y agregá lo que necesites.</p>
           <a class="btn btn-red" href="catalogo.html">Ver catálogo →</a>
         </div>`;
       return;
@@ -2122,7 +2122,7 @@ function initCart(){
       <div class="cart-head">
         <div>
           <div class="kicker">Tu carrito</div>
-          <h1>${items.length} ${items.length === 1 ? 'pieza lista' : 'piezas listas'} para pedido</h1>
+          <h1>${items.length} ${items.length === 1 ? 'repuesto listo' : 'repuestos listos'} para pedido</h1>
         </div>
         <div class="cart-steps"><span class="on">01 · Carrito</span><span>02 · Entrega</span><span>03 · Confirmación</span></div>
       </div>
@@ -2172,7 +2172,7 @@ function initCart(){
         <aside class="summary">
           <div class="kicker">Resumen de compra</div>
           <div class="sum-rows">
-            <div><span>Subtotal (${items.reduce((a,i) => a + i.qty, 0)} piezas)</span><b>${gs(total)}</b></div>
+            <div><span>Subtotal (${items.reduce((a,i) => a + i.qty, 0)} unidades)</span><b>${gs(total)}</b></div>
             <div><span>${delivery === 'retiro' ? 'Retiro en local' : 'Envío'}</span><b style="color:${delivery === 'retiro' ? 'var(--green)' : 'var(--ink)'}">${delivery === 'retiro' ? 'Gratis' : 'A coordinar'}</b></div>
             <div><span>Impuestos incluidos</span><b>—</b></div>
           </div>
