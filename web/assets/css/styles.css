@@ -686,9 +686,14 @@ h1,h2,h3{margin:0;letter-spacing:-.03em;line-height:1.02;font-weight:900}
     scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
     scrollbar-width:none;padding-bottom:6px}
   .taller::-webkit-scrollbar{display:none}
-  .taller__panel{flex:0 0 88%!important;height:auto;min-height:420px;
+  /* cada panel casi ocupa el viewport (solo deja un peek del siguiente para invitar al swipe)
+     y baja un poco su altura para que título+precio+CTA queden a la vista sin scroll extra */
+  .taller__panel{flex:0 0 94%!important;height:auto;min-height:360px;
     scroll-snap-align:start;border:0;border-right:1px solid #000;position:relative}
-  .taller__panel.is-active{flex:0 0 88%!important}
+  .taller__panel.is-active{flex:0 0 94%!important}
+  .taller__content{padding:20px 20px 22px}
+  .taller__title{font-size:20px;line-height:1.15}
+  .taller__price{font-size:22px}
   /* en el carrusel siempre se muestra el contenido como activo */
   .taller__panel .taller__big,.taller__panel .taller__vertical{display:none}
   .taller__panel .taller__img{transform:none;filter:none}
@@ -988,8 +993,11 @@ h1,h2,h3{margin:0;letter-spacing:-.03em;line-height:1.02;font-weight:900}
   .dh-bento{grid-template-columns:1fr;gap:12px;min-height:0}
   .dh-hero{height:auto;min-height:clamp(420px,72vw,520px)}
   .dh-side{height:auto}
-  .dh-thumbs{flex-direction:row;overflow-x:auto;overflow-y:hidden;padding-bottom:6px;
-    scroll-snap-type:x mandatory}
+  /* la lista de thumbs vive dentro de .dh-side que en móvil tiene height:auto;
+     con flex:1 la lista colapsaba a 0px. flex:0 0 auto + min-height explícito
+     asegura que las tarjetas de los próximos vehículos se vean. */
+  .dh-thumbs{flex:0 0 auto;min-height:96px;flex-direction:row;overflow-x:auto;overflow-y:hidden;
+    padding-bottom:6px;scroll-snap-type:x mandatory;gap:10px}
   .dh-thumb{flex:0 0 260px;scroll-snap-align:start;grid-template-columns:72px 1fr auto;gap:10px}
   .dh-thumb__img{width:72px;height:56px}
   .dh-side__label{padding-bottom:8px}
