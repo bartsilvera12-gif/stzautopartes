@@ -1335,13 +1335,57 @@ function initHome(){
     toast('Búsqueda guardada');
   });
 
-  /* formulario rápido */
+  /* formulario rápido del index — inserta lead en Supabase */
   const qs = $('#quick-sell');
-  if (qs) qs.addEventListener('submit', e => {
+  if (qs) qs.addEventListener('submit', async e => {
     e.preventDefault();
-    qs.querySelector('.form-ok').classList.add('show');
-    qs.reset();
-    toast('Solicitud enviada');
+    const btn = qs.querySelector('button[type="submit"]');
+    const originalBtn = btn ? btn.innerHTML : '';
+    if (btn) { btn.disabled = true; btn.innerHTML = 'Enviando…'; }
+
+    try {
+      const estadoPill = qs.querySelector('[data-pills="estado"] .pill.on');
+      const vehiculoRaw = (qs.querySelector('#q-vehiculo')?.value || '').trim();
+      // "Toyota Corolla" -> marca "Toyota", modelo "Corolla"
+      const [marca, ...modeloParts] = vehiculoRaw.split(/\s+/);
+      const payload = {
+        nombre:      qs.querySelector('#q-nombre')?.value.trim() || '',
+        telefono:    qs.querySelector('#q-tel')?.value.trim() || '',
+        marca:       marca || null,
+        modelo:      modeloParts.join(' ') || null,
+        anio:        qs.querySelector('#q-anio')?.value.trim() || null,
+        estado:      estadoPill ? estadoPill.textContent.trim() : null,
+        ubicacion:   qs.querySelector('#q-ubic')?.value.trim() || null,
+        observacion: qs.querySelector('#q-obs')?.value.trim() || null,
+      };
+
+      if (!payload.nombre || !payload.telefono) {
+        toast('Completá nombre y teléfono');
+        if (btn) { btn.disabled = false; btn.innerHTML = originalBtn; }
+        return;
+      }
+
+      const sb = window.supabase && window.STZ_CONFIG
+        ? window.supabase.createClient(
+            window.STZ_CONFIG.SUPABASE_URL,
+            window.STZ_CONFIG.SUPABASE_ANON_KEY,
+            { db: { schema: window.STZ_CONFIG.SUPABASE_SCHEMA } }
+          )
+        : null;
+      if (!sb) throw new Error('Supabase no está inicializado');
+
+      const { error } = await sb.from('desarme_leads').insert(payload);
+      if (error) throw new Error(error.message);
+
+      qs.querySelector('.form-ok').classList.add('show');
+      qs.reset();
+      toast('Solicitud enviada');
+    } catch (err) {
+      console.error('[quick-sell] insert error', err);
+      const msg = err && err.message ? err.message : String(err);
+      toast('No se pudo enviar: ' + msg);
+      if (btn) { btn.disabled = false; btn.innerHTML = originalBtn; }
+    }
   });
 }
 
