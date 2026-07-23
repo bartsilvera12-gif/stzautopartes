@@ -1,0 +1,89 @@
+# ============================================================================
+# STZ AutoPartes · configuración Apache para Hostinger
+# ============================================================================
+
+# Charset por defecto
+AddDefaultCharset UTF-8
+
+RewriteEngine On
+
+# --- HTTPS forzado (Hostinger emite el certificado gratis desde el panel) ----
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# --- URLs limpias: /catalogo → /catalogo.html --------------------------------
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([^\.]+)$ $1.html [NC,L]
+
+# --- Trailing slash consistente: /catalogo/ → /catalogo ---------------------
+RewriteCond %{REQUEST_URI} /$
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+# --- Home explícito ----------------------------------------------------------
+DirectoryIndex index.html
+
+# ============================================================================
+# Cache de assets estáticos
+# ============================================================================
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 hour"
+
+  # Imágenes: cache largo, casi no cambian
+  ExpiresByType image/jpeg  "access plus 30 days"
+  ExpiresByType image/png   "access plus 30 days"
+  ExpiresByType image/webp  "access plus 30 days"
+  ExpiresByType image/svg+xml "access plus 30 days"
+  ExpiresByType image/x-icon "access plus 30 days"
+
+  # Fuentes (por si en el futuro se hostean localmente)
+  ExpiresByType font/woff2  "access plus 30 days"
+  ExpiresByType font/woff   "access plus 30 days"
+
+  # CSS y JS: cache corto para poder desplegar rápido
+  ExpiresByType text/css                "access plus 7 days"
+  ExpiresByType application/javascript  "access plus 7 days"
+  ExpiresByType text/javascript         "access plus 7 days"
+
+  # HTML: no cachear (siempre servir la última versión)
+  ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+# ============================================================================
+# Compresión gzip / deflate
+# ============================================================================
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/plain
+  AddOutputFilterByType DEFLATE text/html
+  AddOutputFilterByType DEFLATE text/xml
+  AddOutputFilterByType DEFLATE text/css
+  AddOutputFilterByType DEFLATE text/javascript
+  AddOutputFilterByType DEFLATE application/javascript
+  AddOutputFilterByType DEFLATE application/xml
+  AddOutputFilterByType DEFLATE application/json
+  AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# ============================================================================
+# Seguridad básica
+# ============================================================================
+<IfModule mod_headers.c>
+  # Bloquear iframes cross-site
+  Header always set X-Frame-Options "SAMEORIGIN"
+  # Evitar sniffing de MIME
+  Header always set X-Content-Type-Options "nosniff"
+  # Referrer razonable
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Ocultar el .htaccess a curiosos
+<Files ".htaccess">
+  Require all denied
+</Files>
+
+# ============================================================================
+# 404: si un día se crea un 404.html descomentar la línea
+# ============================================================================
+# ErrorDocument 404 /404.html
