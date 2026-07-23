@@ -140,7 +140,12 @@
       yearTo: null,
       condition: 'usado',
       price: row.precio_venta != null ? Number(row.precio_venta) : null,
-      stock: null,
+      // Semantica de stock para la web:
+      //   controla_stock=false  -> null -> 'Consultar disponibilidad'
+      //   controla_stock=true   -> stock_actual (0 = agotado, 1 = ultima, N = ok)
+      stock: row.controla_stock === false
+        ? null
+        : (row.stock_actual != null ? Math.max(0, Math.floor(Number(row.stock_actual))) : null),
       side: null,
       unit: null,
       img: principalUrl,

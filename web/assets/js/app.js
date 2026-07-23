@@ -393,6 +393,7 @@ function initTaller(){
   }
   const stockInfo = p => {
     if (p.stock === null) return { cls:'is-ask', txt:'Consultar disponibilidad', canBuy:false };
+    if (p.stock === 0)    return { cls:'is-out', txt:'Sin stock · disponibilidad 0', canBuy:false };
     if (p.stock === 1)    return { cls:'is-low', txt:'Última unidad', canBuy:true };
     return { cls:'is-ok', txt:'En stock · ' + p.stock, canBuy:true };
   };
@@ -1491,7 +1492,8 @@ function initCatalog(){
     if (state.yearTo   && p.yearFrom > Number(state.yearTo))   return false;
     if (p.price > state.maxPrice) return false;
     if (state.stock.size){
-      const inStock = p.stock !== null;
+      // "En stock" solo cuenta cuando el numero es >0. stock=0 es 'sin stock'.
+      const inStock = p.stock !== null && p.stock > 0;
       if (state.stock.has('stock') && !state.stock.has('ask') && !inStock) return false;
       if (state.stock.has('ask') && !state.stock.has('stock') && inStock) return false;
     }
@@ -1617,12 +1619,19 @@ function initProduct(){
 
         <div class="pd-cta">
           <div class="qty">
-            <button type="button" data-q="-1" aria-label="Restar">−</button>
+            <button type="button" data-q="-1" aria-label="Restar" ${p.stock === 0 || p.stock === null ? 'disabled' : ''}>−</button>
             <span id="qty">${qty}</span>
-            <button type="button" data-q="1" aria-label="Sumar">+</button>
+            <button type="button" data-q="1" aria-label="Sumar" ${p.stock === 0 || p.stock === null ? 'disabled' : ''}>+</button>
           </div>
-          <button class="btn btn-dark" type="button" id="add-cart">Agregar al carrito →</button>
+          <button class="btn btn-dark" type="button" id="add-cart"
+                  ${p.stock === 0 || p.stock === null ? 'disabled title="Sin stock disponible"' : ''}>
+            ${p.stock === 0 ? 'Sin stock' : (p.stock === null ? 'Consultar disponibilidad' : 'Agregar al carrito →')}
+          </button>
         </div>
+        ${p.stock === 0 ? `
+        <div class="warn" style="background:#fff1f0;border-color:#ffccc7;color:#a8071a;margin-top:12px">
+          <b>Sin stock actualmente.</b> Consultanos por WhatsApp para saber cuándo vuelve o si tenemos una unidad equivalente en desarme.
+        </div>` : ''}
         <a class="btn btn-wa-solid btn-block" style="margin-top:10px" href="${waLink('Hola STZ, consulto por ' + p.id + ' — ' + p.name)}" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.1-.2 0-.4.1-.5l.4-.5c.1-.2.2-.3.3-.5v-.5l-.8-1.9c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.7.7-1 1.6-.9 2.5a7 7 0 0 0 1.5 3.1 9.4 9.4 0 0 0 4.6 3.3c1.1.4 1.9.4 2.5.3.6-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
           <span>Consultar por WhatsApp</span>

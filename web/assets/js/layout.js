@@ -430,6 +430,7 @@ function renderFooter(){
 /* ---------- tarjeta de producto (reutilizable) ---------- */
 function stockHTML(p){
   if (p.stock === null) return '<div class="stock ask">◐ Consultar disponibilidad</div>';
+  if (p.stock === 0)    return '<div class="stock out" style="color:#a8071a">✕ Sin stock · 0</div>';
   if (p.stock === 1)    return '<div class="stock low">● Última unidad</div>';
   return '<div class="stock">● En stock · ' + p.stock + '</div>';
 }
