@@ -9,10 +9,10 @@
 
 window.STZ_CONFIG = {
   // Ejemplo: 'https://abcdefg.supabase.co'
-  SUPABASE_URL: '__RELLENAR__',
+  SUPABASE_URL: 'https://api.neura.com.py',
 
   // Ejemplo: 'eyJhbGciOiJIUzI1NiIs...'  (anon public key, Settings → API)
-  SUPABASE_ANON_KEY: '__RELLENAR__',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzc0MTAxNDYxLCJleHAiOjE5MzE3ODE0NjF9.7_wAph8IolPMXtgfpezSwS5XR62IdD__qhqCywLDp3Q',
 
   // Schema del ERP de STZ AutoPartes. Debe estar en Settings → API → Exposed schemas.
   SUPABASE_SCHEMA: 'stzautoparteserp',
