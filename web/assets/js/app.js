@@ -2309,7 +2309,8 @@ function initSellPage(){
       toast('Solicitud enviada');
     } catch (err) {
       console.error('[sell-form] insert error', err);
-      toast('No se pudo enviar. Intentá de nuevo o consultanos por WhatsApp.');
+      const msg = err && err.message ? err.message : String(err);
+      toast('No se pudo enviar: ' + msg);
       if (btn) { btn.disabled = false; btn.innerHTML = originalBtn; }
     }
   });
