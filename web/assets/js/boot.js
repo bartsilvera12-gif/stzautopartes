@@ -74,19 +74,30 @@
   const unidadFallbackImg = (id) => UNIDAD_FALLBACK_IMGS[hashStr(String(id || '')) % UNIDAD_FALLBACK_IMGS.length];
 
   // ── Helpers de mapping ───────────────────────────────────────
+  // raw.githubusercontent.com sirve las imagenes con CSP sandbox, lo que hace
+  // que muchos browsers no las rendericen dentro de <img>. Reescribimos a
+  // jsDelivr en cliente para que funcione sin depender de un UPDATE en la DB.
+  const rewriteGithubRaw = (url) => {
+    if (!url) return url;
+    return url.replace(
+      /^https:\/\/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\//,
+      'https://cdn.jsdelivr.net/gh/$1/$2@$3/'
+    );
+  };
+
   const publicUrlFor = (bucket, path) => {
     if (!path) return null;
-    if (path.startsWith('http')) return path;
+    if (path.startsWith('http')) return rewriteGithubRaw(path);
     return `${window.STZ_CONFIG.SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;
   };
 
   const productImg = (row) => {
-    if (row.imagen_url) return row.imagen_url;
+    if (row.imagen_url) return rewriteGithubRaw(row.imagen_url);
     return publicUrlFor(window.STZ_CONFIG.PRODUCTOS_BUCKET, row.imagen_path);
   };
   const desarmeImg = (row, kind) => {
     const url = row[`${kind}_url`];
-    if (url) return url;
+    if (url) return rewriteGithubRaw(url);
     return publicUrlFor(window.STZ_CONFIG.DESARME_BUCKET, row[`${kind}_path`]);
   };
 
@@ -100,7 +111,7 @@
       code: 'CAT · ' + String(i + 1).padStart(2, '0'),
       name: row.nombre,
       count,
-      img: row.imagen_url || fallback,
+      img: rewriteGithubRaw(row.imagen_url) || fallback,
       ph: row.nombre,
       visible_index: row.visible_index === true,
     };
