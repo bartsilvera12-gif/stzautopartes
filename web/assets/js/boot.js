@@ -156,8 +156,17 @@
     };
   }
 
-  function mapUnidad(row, piezasPorUnidad) {
+  function mapUnidad(row, piezasPorUnidad, galeriaPorUnidad) {
     const piezas = piezasPorUnidad.get(row.id) || [];
+    const principalUrl = desarmeImg(row, 'foto_principal') || unidadFallbackImg(row.id);
+    const galeria = galeriaPorUnidad.get(row.id) || [];
+    // photos: [[url, epigrafe], ...] — la primera es la principal
+    const photos = [];
+    if (principalUrl) photos.push([principalUrl, [row.marca, row.modelo].filter(Boolean).join(' ')]);
+    galeria.forEach((g) => {
+      const url = g.url || publicUrlFor(window.STZ_CONFIG.DESARME_BUCKET, g.path);
+      if (url && url !== principalUrl) photos.push([url, [row.marca, row.modelo].filter(Boolean).join(' ')]);
+    });
     return {
       id: row.id,
       code: row.codigo || row.id.slice(0, 8),
@@ -168,10 +177,12 @@
       fuel: row.combustible,
       pieces: piezas.length,
       status: row.estado === 'agotada' ? 'low' : 'ok',
-      img: desarmeImg(row, 'foto_principal') || unidadFallbackImg(row.id),
+      img: principalUrl,
       ph: [row.marca, row.modelo, row.anio].filter(Boolean).join(' '),
       descripcion: row.descripcion || '',
       featured: row.destacado_web === true,
+      photos,
+      imgs: photos.slice(1).map(([u]) => u),
       partsList: piezas.map((p) => ({
         id: p.id,
         name: p.nombre,
@@ -210,12 +221,19 @@
       arr.push(p);
       piezasPorUnidad.set(p.unidad_id, arr);
     });
+    const galeriaPorUnidad = new Map();
+    (unidadImgs.data || []).forEach((g) => {
+      const arr = galeriaPorUnidad.get(g.unidad_id) || [];
+      arr.push(g);
+      arr.sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0));
+      galeriaPorUnidad.set(g.unidad_id, arr);
+    });
 
     const mappedProductos = (prods.data || []).map((p) =>
       mapProducto(p, categoriasByUuid, galeriaPorProducto)
     );
     const mappedCategorias = (cats.data || []).map((c, i) => mapCategoria(c, i, prods.data || []));
-    const mappedUnidades = (unidades.data || []).map((u) => mapUnidad(u, piezasPorUnidad));
+    const mappedUnidades = (unidades.data || []).map((u) => mapUnidad(u, piezasPorUnidad, galeriaPorUnidad));
     return { categorias: mappedCategorias, productos: mappedProductos, unidades: mappedUnidades };
   }
 
