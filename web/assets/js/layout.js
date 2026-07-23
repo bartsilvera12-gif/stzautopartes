@@ -13,7 +13,7 @@ function getProduct(id){ return STZ_PRODUCTS.find(p => p.id === id); }
 
 /* <img> de foto real; si falta el archivo queda el marcador gris con la descripción */
 function photo(file, alt){
-  return file ? `<img class="photo" src="assets/img/fotos/${file}" alt="${esc(alt)}" loading="lazy">` : '';
+  return file ? `<img class="photo" src="${imgSrc(file)}" alt="${esc(alt)}" loading="lazy">` : '';
 }
 function photoBox(file, alt, cls){
   return `<div class="ph ${cls || ''}" data-ph="${esc(alt)}">${photo(file, alt)}</div>`;

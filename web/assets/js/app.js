@@ -2,6 +2,17 @@
    STZ AUTOPARTES · lógica por página
    ============================================================ */
 
+/**
+ * Resuelve el src de una imagen: si viene una URL absoluta (del ERP,
+ * Supabase Storage, jsDelivr) la devuelve tal cual; si viene un
+ * filename bare (mocks legacy), le antepone la carpeta local.
+ */
+function imgSrc(v) {
+  if (!v) return '';
+  if (/^https?:\/\//.test(v) || v.startsWith('data:') || v.startsWith('/')) return v;
+  return 'assets/img/fotos/' + v;
+}
+
 const BRANDS = [...new Set(STZ_PRODUCTS.map(p => p.brand))].sort();
 const MODELS = [...new Set(STZ_PRODUCTS.map(p => p.model))].sort();
 const YEARS  = (() => {
@@ -51,7 +62,7 @@ function renderCategorias(){
     const n = counts[c.id] || 0;
     const label = n === 1 ? '1 disponible' : `${n} disponibles`;
     return `<a class="cat-card cat-card--${slot.variant}" href="catalogo.html?cat=${c.id}">
-      <img class="cat-card__img" src="assets/img/fotos/${c.img}" alt="${esc(c.ph || c.name)}" loading="lazy" decoding="async" width="800" height="500">
+      <img class="cat-card__img" src="${imgSrc(c.img)}" alt="${esc(c.ph || c.name)}" loading="lazy" decoding="async" width="800" height="500">
       <span class="cat-card__overlay"></span>
       ${CAT_ARROW}
       <div class="cat-card__body">
@@ -397,7 +408,7 @@ function initTaller(){
     return `
       <button class="taller__panel" role="tab" data-idx="${i}" data-id="${esc(p.id)}"
               aria-selected="false" aria-label="${esc(cond)} · ${esc(p.name)}">
-        <img class="taller__img" src="assets/img/fotos/${esc(p.img)}" alt="${esc(p.name)}"
+        <img class="taller__img" src="${esc(imgSrc(p.img))}" alt="${esc(p.name)}"
              width="1200" height="700" decoding="async">
         <span class="taller__scrim"></span>
 
@@ -703,13 +714,13 @@ function initDesarmeHome(){
   const STATUS_CLASS = { ok:'', low:'is-low', off:'is-off' };
 
   /* Precarga suave */
-  units.forEach(u => { if (u.img){ const im = new Image(); im.src = 'assets/img/fotos/' + u.img; } });
+  units.forEach(u => { if (u.img){ const im = new Image(); im.src = imgSrc(u.img); } });
 
   const reduced = matchMedia('(prefers-reduced-motion:reduce)').matches;
   let active = 0;
 
   const thumbHTML = (u, i) => {
-    const img = u.img ? ('assets/img/fotos/' + u.img) : FALLBACK_IMG;
+    const img = u.img ? (imgSrc(u.img)) : FALLBACK_IMG;
     return `
       <li>
         <a class="dh-thumb${i === 0 ? ' is-active' : ''}" data-idx="${i}"
@@ -740,7 +751,7 @@ function initDesarmeHome(){
   };
 
   const renderHero = (u, i) => {
-    const src = u.img ? ('assets/img/fotos/' + u.img) : FALLBACK_IMG;
+    const src = u.img ? (imgSrc(u.img)) : FALLBACK_IMG;
     const status = STATUS_LABEL[u.status] || 'Disponible';
     const badgeClass = STATUS_CLASS[u.status] || '';
 
@@ -936,7 +947,7 @@ function initDesarmeList(){
   const state = { q:'', marca:'', anio:'', motor:'', caja:'', sort:'recent' };
 
   const rowHTML = (u, i) => {
-    const img = u.img ? ('assets/img/fotos/' + u.img) : FALLBACK_IMG;
+    const img = u.img ? (imgSrc(u.img)) : FALLBACK_IMG;
     const status = STATUS_LABEL[u.status] || STATUS_LABEL.ok;
     const wa = waLink(`Hola STZ, quiero consultar por la unidad ${u.code} (${u.name} ${u.year}).`);
     return `
@@ -1096,7 +1107,7 @@ function initUnidadDetail(){
   /* Galería: foto principal + extras opcionales en u.imgs[] */
   const gallery = [u.img, ...(Array.isArray(u.imgs) ? u.imgs : [])]
     .filter(Boolean)
-    .map(f => 'assets/img/fotos/' + f);
+    .map(f => imgSrc(f));
   if (!gallery.length) gallery.push(FALLBACK_IMG);
   const primaryImg = gallery[0];
 
@@ -1244,7 +1255,7 @@ function initUnidadDetail(){
   const rel = [...sameBrand, ...rest].slice(0, 3);
 
   const relCard = (x) => {
-    const rimg = x.img ? ('assets/img/fotos/' + x.img) : FALLBACK_IMG;
+    const rimg = x.img ? imgSrc(x.img) : FALLBACK_IMG;
     return `
     <a class="udet-rel-card" href="desarme.html?u=${encodeURIComponent(x.code)}">
       <div class="udet-rel-card__img">
@@ -1816,7 +1827,7 @@ function openPdLightbox(p, startIdx, onChange){
 
   const paint = () => {
     const [f, t] = p.photos[i];
-    img.src = 'assets/img/fotos/' + f;
+    img.src = imgSrc(f);
     img.alt = p.name + ' — ' + t;
     cap.textContent = t;
     counter.textContent = String(i + 1).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
@@ -1908,7 +1919,7 @@ function initDesarme(){
   };
 
   /* Precarga imágenes de todas las unidades para evitar parpadeos */
-  STZ_UNITS.forEach(u => { if (u.img){ const im = new Image(); im.src = 'assets/img/fotos/' + u.img; } });
+  STZ_UNITS.forEach(u => { if (u.img){ const im = new Image(); im.src = imgSrc(u.img); } });
 
   const renderTabs = () => {
     $('#unit-tabs').innerHTML = STZ_UNITS.map(u => `
