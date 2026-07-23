@@ -205,6 +205,12 @@
     try {
       await loadScript('assets/js/layout.js');
       await loadScript('assets/js/app.js');
+      // layout.js y app.js registran su init con DOMContentLoaded. Como boot
+      // los inyecta despues (ya se disparo el evento del documento), les
+      // avisamos manualmente para que corran el init.
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        document.dispatchEvent(new Event('DOMContentLoaded'));
+      }
     } catch (e) {
       showFatal('No se pudo cargar la interfaz.');
     }
