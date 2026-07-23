@@ -233,6 +233,150 @@ function renderHeader(){
   }
 }
 
+/* ---------- custom select (estiliza selects nativos) ----------
+   Envuelve un <select> real, lo oculta y muestra una lista custom.
+   El <select> sigue siendo la fuente de verdad: valor y eventos change.
+   Uso: enhanceSelect(document.querySelector('#mi-select'), {theme:'dark'})
+   O batch: enhanceSelectsIn(document.querySelector('.contenedor'))
+*/
+function enhanceSelect(sel, opts){
+  if (!sel || sel.dataset.stzSelectDone === '1') return;
+  opts = opts || {};
+  const theme = opts.theme || 'dark';
+
+  sel.dataset.stzSelectDone = '1';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'stz-select stz-select--' + theme;
+  const trigger = document.createElement('button');
+  trigger.type = 'button';
+  trigger.className = 'stz-select__trigger';
+  trigger.setAttribute('aria-haspopup','listbox');
+  trigger.setAttribute('aria-expanded','false');
+  trigger.innerHTML = '<span class="stz-select__label"></span>' +
+    '<svg class="stz-select__chev" viewBox="0 0 12 8" width="10" height="8" aria-hidden="true">' +
+    '<path d="M1 1.5 L6 6.5 L11 1.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  const menu = document.createElement('div');
+  menu.className = 'stz-select__menu';
+  menu.setAttribute('role','listbox');
+  menu.hidden = true;
+
+  sel.parentNode.insertBefore(wrap, sel);
+  wrap.appendChild(trigger);
+  wrap.appendChild(menu);
+  wrap.appendChild(sel);
+  sel.classList.add('stz-select__native');
+
+  const labelEl = trigger.querySelector('.stz-select__label');
+
+  const rebuild = () => {
+    menu.innerHTML = '';
+    Array.from(sel.options).forEach((o, i) => {
+      const li = document.createElement('div');
+      li.className = 'stz-select__opt' + (o.selected ? ' is-selected' : '');
+      li.setAttribute('role','option');
+      li.setAttribute('aria-selected', o.selected ? 'true' : 'false');
+      li.dataset.value = o.value;
+      li.dataset.idx = String(i);
+      li.textContent = o.textContent;
+      menu.appendChild(li);
+    });
+    syncLabel();
+  };
+  const syncLabel = () => {
+    const opt = sel.options[sel.selectedIndex];
+    labelEl.textContent = opt ? opt.textContent : '';
+  };
+
+  let open = false;
+  let highlight = -1;
+  const openMenu = () => {
+    if (open) return;
+    open = true;
+    menu.hidden = false;
+    trigger.setAttribute('aria-expanded','true');
+    wrap.classList.add('is-open');
+    highlight = Math.max(0, sel.selectedIndex);
+    updateHighlight();
+    /* posicionar hacia arriba si no cabe abajo */
+    const rect = wrap.getBoundingClientRect();
+    const menuH = menu.offsetHeight;
+    wrap.classList.toggle('open-up', rect.bottom + menuH + 8 > innerHeight && rect.top > menuH + 8);
+    document.addEventListener('click', onDocClick, true);
+  };
+  const closeMenu = () => {
+    if (!open) return;
+    open = false;
+    menu.hidden = true;
+    trigger.setAttribute('aria-expanded','false');
+    wrap.classList.remove('is-open','open-up');
+    document.removeEventListener('click', onDocClick, true);
+  };
+  const onDocClick = (e) => { if (!wrap.contains(e.target)) closeMenu(); };
+
+  const updateHighlight = () => {
+    Array.from(menu.children).forEach((el, i) => {
+      el.classList.toggle('is-hl', i === highlight);
+      if (i === highlight) el.scrollIntoView({ block:'nearest' });
+    });
+  };
+
+  const chooseIdx = (idx) => {
+    if (idx < 0 || idx >= sel.options.length) return;
+    sel.selectedIndex = idx;
+    sel.dispatchEvent(new Event('input',  { bubbles:true }));
+    sel.dispatchEvent(new Event('change', { bubbles:true }));
+    rebuild();
+    closeMenu();
+    trigger.focus();
+  };
+
+  trigger.addEventListener('click', (e) => {
+    e.preventDefault();
+    open ? closeMenu() : openMenu();
+  });
+
+  menu.addEventListener('click', (e) => {
+    const opt = e.target.closest('.stz-select__opt');
+    if (!opt) return;
+    chooseIdx(parseInt(opt.dataset.idx, 10));
+  });
+
+  trigger.addEventListener('keydown', (e) => {
+    if (['ArrowDown','ArrowUp','Enter',' '].includes(e.key)){
+      e.preventDefault();
+      if (!open){ openMenu(); return; }
+    }
+    if (!open){
+      if (e.key === 'ArrowDown') chooseIdx(Math.min(sel.options.length - 1, sel.selectedIndex + 1));
+      else if (e.key === 'ArrowUp') chooseIdx(Math.max(0, sel.selectedIndex - 1));
+      return;
+    }
+    if (e.key === 'ArrowDown'){ highlight = Math.min(sel.options.length - 1, highlight + 1); updateHighlight(); }
+    else if (e.key === 'ArrowUp'){ highlight = Math.max(0, highlight - 1); updateHighlight(); }
+    else if (e.key === 'Home'){ highlight = 0; updateHighlight(); }
+    else if (e.key === 'End'){ highlight = sel.options.length - 1; updateHighlight(); }
+    else if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); chooseIdx(highlight); }
+    else if (e.key === 'Escape'){ closeMenu(); }
+  });
+
+  /* si el <select> cambia externamente, re-render */
+  sel.addEventListener('stz:refresh', rebuild);
+
+  /* observar cambios en las opciones (útil cuando fillOpts corre después) */
+  if ('MutationObserver' in window){
+    const mo = new MutationObserver(rebuild);
+    mo.observe(sel, { childList:true });
+  }
+
+  rebuild();
+}
+
+function enhanceSelectsIn(root, opts){
+  (root || document).querySelectorAll('select:not([data-stz-select-done="1"])').forEach(s => enhanceSelect(s, opts));
+}
+
 /* ---------- footer ---------- */
 function renderFooter(){
   const host = $('#site-footer');

@@ -894,7 +894,7 @@ function initDesarmeList(){
   if (!rows || typeof STZ_UNITS === 'undefined') return;
 
   const FALLBACK_IMG = 'assets/img/fotos/unidad-lateral.jpg';
-  const STATUS_LABEL = { ok:'Activo · disponibles', low:'Pocas unidades', off:'Reservado' };
+  const STATUS_LABEL = { ok:'Activo en el patio', low:'Últimas semanas', off:'Reservado' };
   const brandOf = u => (u.name || '').split(' ')[0] || '';
 
   /* Fuente única: STZ_UNITS (mismo array que usa el resto del sitio) */
@@ -920,6 +920,12 @@ function initDesarmeList(){
   fillOpts(anioEl,  uniq(units.map(u => u.year)).sort((a,b) => b - a), false);
   fillOpts(motorEl, uniq(units.map(u => u.engine)));
   fillOpts(cajaEl,  uniq(units.map(u => u.gearbox)));
+
+  /* Reemplaza los <select> nativos por dropdowns custom que combinan con el tema oscuro */
+  if (typeof enhanceSelectsIn === 'function'){
+    enhanceSelectsIn(form, { theme:'dark' });
+    if (sortEl) enhanceSelect(sortEl, { theme:'light-mini' });
+  }
 
   /* Brand tabs: "Todos" + marcas únicas en orden de aparición */
   const brandsOrdered = uniq(units.map(brandOf));
@@ -949,7 +955,6 @@ function initDesarmeList(){
           <div class="dv-row__kicker">Unidad ${esc(u.code)}</div>
           <h3 class="dv-row__title">${esc(u.name)} · ${u.year}</h3>
           <div class="dv-row__mono">Motor ${esc(u.engine)} · Caja ${esc(u.gearbox)}</div>
-          <div class="dv-row__count ${u.status === 'low' ? 'low' : ''}">${u.pieces} disponibles</div>
           <p class="dv-row__desc">${esc(status)}. Fotografía real y repuestos identificados y trazables desde el ERP.</p>
         </div>
         <div class="dv-row__actions">
@@ -957,7 +962,7 @@ function initDesarmeList(){
             <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h12M12 5l5 5-5 5"/></svg>
           </span>
           <a class="dv-row__wa" href="${wa}" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M20 12a8 8 0 1 1-3.9-6.9L20 4l-1.1 3.9A8 8 0 0 1 20 12Z"/></svg>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.1-.2 0-.4.1-.5l.4-.5c.1-.2.2-.3.3-.5v-.5l-.8-1.9c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.7.7-1 1.6-.9 2.5a7 7 0 0 0 1.5 3.1 9.4 9.4 0 0 0 4.6 3.3c1.1.4 1.9.4 2.5.3.6-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
             Consultar por WhatsApp
           </a>
         </div>
