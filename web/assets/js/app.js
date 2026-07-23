@@ -1250,7 +1250,6 @@ function initUnidadDetail(){
         <div class="udet-rel-card__kicker">Unidad ${esc(x.code)}</div>
         <h3 class="udet-rel-card__title">${esc(x.name)} · ${x.year}</h3>
         <div class="udet-rel-card__mono">Motor ${esc(x.engine)} · ${esc(x.gearbox)}</div>
-        <div class="udet-rel-card__count ${x.status === 'low' ? 'low' : ''}">${x.pieces} piezas disponibles</div>
       </div>
     </a>`;
   };
