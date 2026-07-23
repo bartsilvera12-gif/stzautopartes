@@ -35,6 +35,44 @@
     document.addEventListener('DOMContentLoaded', () => document.body.prepend(banner));
   }
 
+  // ── Fallbacks locales (si el ERP no manda imagen) ────────────
+  // Las categorias usan la imagen historica del sitio segun el codigo. Si el
+  // codigo no matchea, cae a un generico. `otras.jpg` es el fallback global.
+  const CATEGORIA_FALLBACK_IMG = {
+    burletes: 'assets/img/fotos/cat-burletes.jpg',
+    faros: 'assets/img/fotos/faro-delantero.jpg',
+    comandos: 'assets/img/fotos/comandos.jpg',
+    electrico: 'assets/img/fotos/cat-electrico.jpg',
+    interior: 'assets/img/fotos/cat-interior.jpg',
+    bombas: 'assets/img/fotos/cat-bombas.jpg',
+    frisos: 'assets/img/fotos/cabina-techo.jpg',
+    motores: 'assets/img/fotos/cat-motores.jpg',
+    otras: 'assets/img/fotos/otras.jpg',
+  };
+  const CATEGORIA_FALLBACK_DEFAULT = 'assets/img/fotos/otras.jpg';
+
+  // Las unidades de desarme rotan entre las fotos de vehiculos ya subidas al
+  // repo. Se asigna por hash del id de la unidad para que cada unidad muestre
+  // siempre la misma placeholder entre reloads.
+  const UNIDAD_FALLBACK_IMGS = [
+    'assets/img/fotos/unidades/toyota-voxy-2010.jpg',
+    'assets/img/fotos/unidades/toyota-wish-2010.jpg',
+    'assets/img/fotos/unidades/toyota-premio-2012.jpg',
+    'assets/img/fotos/unidades/toyota-auris-2010.jpg',
+    'assets/img/fotos/unidades/toyota-axio-2005.jpg',
+    'assets/img/fotos/unidades/toyota-vitz-2005.jpg',
+    'assets/img/fotos/unidades/toyota-vitz-rs-2005-2007.jpg',
+    'assets/img/fotos/unidades/toyota-duet-2003.jpg',
+    'assets/img/fotos/unidades/toyota-mr-s-1999.jpg',
+    'assets/img/fotos/unidades/kia-rio-2014.jpg',
+  ];
+  function hashStr(s) {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+    return Math.abs(h);
+  }
+  const unidadFallbackImg = (id) => UNIDAD_FALLBACK_IMGS[hashStr(String(id || '')) % UNIDAD_FALLBACK_IMGS.length];
+
   // ── Helpers de mapping ───────────────────────────────────────
   const publicUrlFor = (bucket, path) => {
     if (!path) return null;
@@ -55,13 +93,14 @@
   function mapCategoria(row, i, productos) {
     const categoryKey = row.codigo ? row.codigo.toLowerCase() : row.id;
     const count = productos.filter((p) => p.categoria_principal_id === row.id).length;
+    const fallback = CATEGORIA_FALLBACK_IMG[categoryKey] || CATEGORIA_FALLBACK_DEFAULT;
     return {
       id: categoryKey,
       _uuid: row.id,
       code: 'CAT · ' + String(i + 1).padStart(2, '0'),
       name: row.nombre,
       count,
-      img: row.imagen_url || null,
+      img: row.imagen_url || fallback,
       ph: row.nombre,
       visible_index: row.visible_index === true,
     };
@@ -118,7 +157,7 @@
       fuel: row.combustible,
       pieces: piezas.length,
       status: row.estado === 'agotada' ? 'low' : 'ok',
-      img: desarmeImg(row, 'foto_principal'),
+      img: desarmeImg(row, 'foto_principal') || unidadFallbackImg(row.id),
       ph: [row.marca, row.modelo, row.anio].filter(Boolean).join(' '),
       descripcion: row.descripcion || '',
       featured: row.destacado_web === true,
