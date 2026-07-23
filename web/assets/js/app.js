@@ -2266,11 +2266,51 @@ function initSellPage(){
     });
   });
 
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
-    $$('.wizard span').forEach(s => s.classList.add('on'));
-    form.querySelector('.form-ok').classList.add('show');
-    form.querySelector('.form-ok').scrollIntoView({ behavior:'smooth', block:'center' });
-    toast('Solicitud enviada');
+    const btn = form.querySelector('button[type="submit"]');
+    const originalBtn = btn ? btn.innerHTML : '';
+    if (btn) { btn.disabled = true; btn.innerHTML = 'Enviando…'; }
+
+    try {
+      const estadoPill = document.querySelector('[data-pills="estado"] .pill.on');
+      const payload = {
+        nombre:      form.querySelector('#s-nombre')?.value.trim() || '',
+        telefono:    form.querySelector('#s-tel')?.value.trim() || '',
+        marca:       form.querySelector('#s-marca')?.value.trim() || null,
+        modelo:      form.querySelector('#s-modelo')?.value.trim() || null,
+        anio:        form.querySelector('#s-anio')?.value.trim() || null,
+        estado:      estadoPill ? estadoPill.textContent.trim() : null,
+        ubicacion:   form.querySelector('#s-ubic')?.value.trim() || null,
+        observacion: form.querySelector('#s-obs')?.value.trim() || null,
+      };
+
+      if (!payload.nombre || !payload.telefono) {
+        toast('Completá nombre y teléfono');
+        if (btn) { btn.disabled = false; btn.innerHTML = originalBtn; }
+        return;
+      }
+
+      const sb = window.supabase && window.STZ_CONFIG
+        ? window.supabase.createClient(
+            window.STZ_CONFIG.SUPABASE_URL,
+            window.STZ_CONFIG.SUPABASE_ANON_KEY,
+            { db: { schema: window.STZ_CONFIG.SUPABASE_SCHEMA } }
+          )
+        : null;
+      if (!sb) throw new Error('Supabase no está inicializado');
+
+      const { error } = await sb.from('desarme_leads').insert(payload);
+      if (error) throw new Error(error.message);
+
+      $$('.wizard span').forEach(s => s.classList.add('on'));
+      form.querySelector('.form-ok').classList.add('show');
+      form.querySelector('.form-ok').scrollIntoView({ behavior:'smooth', block:'center' });
+      toast('Solicitud enviada');
+    } catch (err) {
+      console.error('[sell-form] insert error', err);
+      toast('No se pudo enviar. Intentá de nuevo o consultanos por WhatsApp.');
+      if (btn) { btn.disabled = false; btn.innerHTML = originalBtn; }
+    }
   });
 }
