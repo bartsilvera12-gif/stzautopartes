@@ -117,6 +117,32 @@
     };
   }
 
+  // ── Promociones ───────────────────────────────────────────────
+  // Aplica descuento por porcentaje o monto respetando ventana de fechas.
+  // Devuelve { hasPromo, original, final, discountLabel } con precio final.
+  window.stzPromo = function stzPromo(p) {
+    const original = p && p.price != null ? Number(p.price) : null;
+    if (original == null || !p) return { hasPromo: false, original, final: original, discountLabel: '' };
+    const type = p.discount_type;
+    const value = p.discount_value;
+    if (!type || value == null || !(value > 0)) return { hasPromo: false, original, final: original, discountLabel: '' };
+    const now = Date.now();
+    const startOk = !p.discount_starts_at || new Date(p.discount_starts_at).getTime() <= now;
+    const endOk = !p.discount_ends_at || new Date(p.discount_ends_at).getTime() >= now;
+    if (!startOk || !endOk) return { hasPromo: false, original, final: original, discountLabel: '' };
+    let final = original;
+    let label = '';
+    if (type === 'percent' || type === 'porcentaje' || type === '%') {
+      final = original * (1 - value / 100);
+      label = '-' + Math.round(value) + '%';
+    } else if (type === 'amount' || type === 'monto' || type === 'fijo') {
+      final = original - value;
+      label = '-₲ ' + Math.round(value).toLocaleString('es-PY').replace(/,/g, '.');
+    }
+    if (!(final < original) || final < 0) return { hasPromo: false, original, final: original, discountLabel: '' };
+    return { hasPromo: true, original, final: Math.round(final), discountLabel: label };
+  };
+
   function mapProducto(row, categoriasByUuid, galeriaPorProducto) {
     const cat = categoriasByUuid.get(row.categoria_principal_id);
     const categoryKey = cat ? (cat.codigo ? cat.codigo.toLowerCase() : cat.id) : 'otras';
@@ -128,16 +154,18 @@
       const url = g.url || publicUrlFor(window.STZ_CONFIG.PRODUCTOS_BUCKET, g.path);
       if (url && url !== principalUrl) photos.push([url, row.nombre]);
     });
+    const anioD = row.anio_desde != null ? Number(row.anio_desde) : null;
+    const anioH = row.anio_hasta != null ? Number(row.anio_hasta) : null;
     return {
       id: row.id,
-      oem: null,
+      oem: row.oem || null,
       internal: row.sku,
       name: row.nombre,
       category: categoryKey,
-      brand: null,
-      model: null,
-      yearFrom: null,
-      yearTo: null,
+      brand: row.marca_vehiculo || null,
+      model: row.modelo_vehiculo || null,
+      yearFrom: anioD,
+      yearTo: anioH != null ? anioH : anioD,
       condition: 'usado',
       price: row.precio_venta != null ? Number(row.precio_venta) : null,
       // Semantica de stock para la web:

@@ -429,7 +429,7 @@ function initTaller(){
           <h3 class="taller__title">${esc(p.name)}</h3>
           <div class="taller__fit">${esc(p.brand)} ${esc(p.model)} · ${p.yearFrom}–${p.yearTo}</div>
           <div class="taller__price-row">
-            <div class="taller__price">${gs(p.price)}</div>
+            <div class="taller__price">${(function(){var pr=stzPromo(p);return pr.hasPromo?('<span style="text-decoration:line-through;opacity:.6;margin-right:8px">'+gs(pr.original)+'</span>'+gs(pr.final)):gs(p.price);})()}</div>
             <div class="taller__stock ${s.cls}">${esc(s.txt)}</div>
           </div>
           <div class="taller__cta">
@@ -1421,6 +1421,22 @@ function initCatalog(){
   $('#f-desde').value = state.yearFrom;
   $('#f-hasta').value = state.yearTo;
 
+  // Modelo: se repuebla en cascada según marcas seleccionadas.
+  const modeloSel = $('#f-modelo');
+  const refreshModelos = () => {
+    if (!modeloSel) return;
+    const sel = state.brands.size
+      ? STZ_PRODUCTS.filter(p => state.brands.has(p.brand))
+      : STZ_PRODUCTS;
+    const models = [...new Set(sel.map(p => p.model).filter(Boolean))].sort();
+    const prev = state.model;
+    modeloSel.innerHTML = '<option value="">Todos los modelos</option>' +
+      models.map(m => `<option value="${esc(m)}" ${m === prev ? 'selected' : ''}>${esc(m)}</option>`).join('');
+    if (!models.includes(prev)) state.model = '';
+  };
+  refreshModelos();
+  if (modeloSel) modeloSel.addEventListener('change', () => { state.model = modeloSel.value; render(); });
+
   const readFilters = () => {
     state.cats   = new Set($$('#f-categorias input:checked').map(i => i.value));
     state.brands = new Set($$('#f-marcas input:checked').map(i => i.value));
@@ -1431,6 +1447,7 @@ function initCatalog(){
     state.maxPrice = Number($('#f-precio').value);
     state.sort = $('#sort').value;
     state.q = $('#cat-search').value.trim();
+    refreshModelos();
     render();
   };
 
@@ -1535,6 +1552,7 @@ function initCatalog(){
     $('#f-desde').value = ''; $('#f-hasta').value = '';
     $('#f-precio').value = 5000000; $('#precio-val').textContent = '5.000.000';
     $('#cat-search').value = ''; state.model = '';
+    if ($('#f-modelo')) $('#f-modelo').value = '';
     readFilters();
   };
   const clearAllBtn = $('#clear-filters');
@@ -1600,7 +1618,7 @@ function initProduct(){
         <div class="pd-fit">${esc(p.brand)} ${esc(p.model)} · ${p.yearFrom}–${p.yearTo} · ${esc(p.side)}</div>
 
         <div class="pd-price">
-          <div class="price">${gs(p.price)}</div>
+          ${priceHTML(p)}
           ${stockHTML(p).replace('<div class="stock', '<div class="stock')}
         </div>
 
@@ -1632,7 +1650,7 @@ function initProduct(){
         <div class="warn" style="background:#fff1f0;border-color:#ffccc7;color:#a8071a;margin-top:12px">
           <b>Sin stock actualmente.</b> Consultanos por WhatsApp para saber cuándo vuelve o si tenemos una unidad equivalente en desarme.
         </div>` : ''}
-        <a class="btn btn-wa-solid btn-block" style="margin-top:10px" href="${waLink('Hola STZ, consulto por ' + p.id + ' — ' + p.name)}" target="_blank" rel="noopener">
+        <a class="btn btn-wa-solid btn-block" style="margin-top:10px" href="${waLink('Hola STZ, me interesa ' + p.name + ' (código ' + p.internal + '). Precio: ' + gs((stzPromo(p).final)||0) + '. URL: ' + location.origin + '/producto.html?id=' + encodeURIComponent(p.id))}" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.1-.2 0-.4.1-.5l.4-.5c.1-.2.2-.3.3-.5v-.5l-.8-1.9c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.7.7-1 1.6-.9 2.5a7 7 0 0 0 1.5 3.1 9.4 9.4 0 0 0 4.6 3.3c1.1.4 1.9.4 2.5.3.6-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
           <span>Consultar por WhatsApp</span>
         </a>
@@ -2224,7 +2242,7 @@ function initCart(){
                   <span>${qty}</span>
                   <button type="button" data-qty="${p.id}:1" aria-label="Sumar">+</button>
                 </div>
-                <div class="line-total">${gs(p.price * qty)}</div>
+                <div class="line-total">${gs(effectivePrice(p) * qty)}</div>
               </div>
             </div>`).join('')}
 
@@ -2279,7 +2297,7 @@ function initCart(){
 
 function waCartText(items, total, delivery){
   return 'Hola STZ, quiero cerrar este pedido:\n' +
-    items.map(({product:p, qty}) => `• ${qty} × ${p.id} — ${p.name} (${gs(p.price * qty)})`).join('\n') +
+    items.map(({product:p, qty}) => `• ${qty} × ${p.internal || p.id} — ${p.name} (${gs(effectivePrice(p) * qty)})`).join('\n') +
     `\nTotal: ${gs(total)}\nEntrega: ${delivery === 'retiro' ? 'Retiro en local' : 'Envío'}`;
 }
 

@@ -75,7 +75,11 @@ function cartItems(){
   const c = cartRead();
   return Object.keys(c).map(id => ({ product: getProduct(id), qty: c[id] })).filter(x => x.product);
 }
-function cartTotal(){ return cartItems().reduce((a,i) => a + i.product.price * i.qty, 0); }
+function effectivePrice(p){
+  var pr = (typeof stzPromo === 'function') ? stzPromo(p) : null;
+  return pr && pr.hasPromo ? pr.final : (p ? p.price : 0);
+}
+function cartTotal(){ return cartItems().reduce((a,i) => a + effectivePrice(i.product) * i.qty, 0); }
 
 function cartRefresh(){
   const n = cartCount();
@@ -435,11 +439,27 @@ function stockHTML(p){
   return '<div class="stock">● En stock · ' + p.stock + '</div>';
 }
 
+function priceHTML(p){
+  const promo = (typeof stzPromo === 'function') ? stzPromo(p) : { hasPromo:false, final:p.price };
+  if (promo.hasPromo){
+    return `<div class="price price--promo">
+      <span class="price__old">${gs(promo.original)}</span>
+      <span class="price__new">${gs(promo.final)}</span>
+      <span class="price__badge">${esc(promo.discountLabel)}</span>
+    </div>`;
+  }
+  return `<div class="price">${gs(p.price)}</div>`;
+}
+
 function productCard(p, opts){
   opts = opts || {};
   const tagClass = p.condition === 'nuevo' ? 'tag nuevo' : (p.condition === 'recuperado' ? 'tag recuperado' : 'tag');
   const shareUrl = 'producto.html?id=' + encodeURIComponent(p.id);
   const shareTitle = p.name + ' — ' + p.id;
+  const fitTxt = [p.brand, p.model].filter(Boolean).join(' ');
+  const yearsTxt = (p.yearFrom || p.yearTo) ? (' · ' + (p.yearFrom || '…') + '–' + (p.yearTo || '…')) : '';
+  const promoFinal = (typeof stzPromo === 'function') ? stzPromo(p).final : p.price;
+  const waMsg = 'Hola STZ, me interesa ' + p.name + ' (código ' + p.internal + '). Precio: ' + gs(promoFinal || 0) + '. URL: ' + location.origin + '/producto.html?id=' + encodeURIComponent(p.id);
   return `
   <article class="card">
     <a class="card-media ph" data-ph="${esc(p.ph)}" href="producto.html?id=${encodeURIComponent(p.id)}" aria-label="${esc(p.name)}">
@@ -453,18 +473,24 @@ function productCard(p, opts){
       </button>
     </a>
     <div class="card-body">
-      <div class="card-oem">${p.oem ? 'OEM · ' + p.oem : 'INT · ' + p.internal}</div>
+      <div class="card-oem">${p.oem ? 'OEM · ' + esc(p.oem) : 'INT · ' + esc(p.internal)}</div>
       <a class="card-title" href="producto.html?id=${encodeURIComponent(p.id)}">${esc(p.name)}</a>
-      <div class="card-fit">${esc(p.brand)} ${esc(p.model)} · ${p.yearFrom}–${p.yearTo}</div>
+      <div class="card-fit">${esc(fitTxt)}${yearsTxt}</div>
       <div class="card-price-row">
-        <div class="price">${gs(p.price)}</div>
+        ${priceHTML(p)}
         ${stockHTML(p)}
       </div>
       ${opts.compact ? '' : `
-      <a class="card-cta" href="producto.html?id=${encodeURIComponent(p.id)}">
-        Ver repuesto
-        <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h11M11 5l5 5-5 5"/></svg>
-      </a>`}
+      <div class="card-actions">
+        <a class="card-cta" href="producto.html?id=${encodeURIComponent(p.id)}">
+          Ver repuesto
+          <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h11M11 5l5 5-5 5"/></svg>
+        </a>
+        <a class="card-wa" href="${esc(waLink(waMsg))}" target="_blank" rel="noopener" aria-label="Consultar por WhatsApp">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.1-.2 0-.4.1-.5l.4-.5c.1-.2.2-.3.3-.5v-.5l-.8-1.9c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.7.7-1 1.6-.9 2.5a7 7 0 0 0 1.5 3.1 9.4 9.4 0 0 0 4.6 3.3c1.1.4 1.9.4 2.5.3.6-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
+          WhatsApp
+        </a>
+      </div>`}
     </div>
   </article>`;
 }
