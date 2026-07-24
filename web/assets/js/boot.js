@@ -143,6 +143,16 @@
     return { hasPromo: true, original, final: Math.round(final), discountLabel: label };
   };
 
+  /**
+   * Lado de la pieza tal como lo marcaron en el ERP.
+   * null = la pieza no tiene lado (motor, caja, radiador...) y no se muestra.
+   */
+  function sideLabel(lado) {
+    if (lado === 'izquierda') return 'Izquierdo';
+    if (lado === 'derecha') return 'Derecho';
+    return null;
+  }
+
   function mapProducto(row, categoriasByUuid, galeriaPorProducto) {
     const cat = categoriasByUuid.get(row.categoria_principal_id);
     const categoryKey = cat ? (cat.codigo ? cat.codigo.toLowerCase() : cat.id) : 'otras';
@@ -174,7 +184,7 @@
       stock: row.controla_stock === false
         ? null
         : (row.stock_actual != null ? Math.max(0, Math.floor(Number(row.stock_actual))) : null),
-      side: null,
+      side: sideLabel(row.lado),
       unit: null,
       img: principalUrl,
       ph: row.nombre,
@@ -221,6 +231,7 @@
         name: p.nombre,
         descripcion: p.descripcion || '',
         price: p.precio != null ? Number(p.precio) : null,
+        side: sideLabel(p.lado),
         img: p.imagen_url || publicUrlFor(window.STZ_CONFIG.DESARME_BUCKET, p.imagen_path),
       })),
       zones: [],

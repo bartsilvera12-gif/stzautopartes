@@ -1618,7 +1618,7 @@ function initProduct(){
           </div>
           <button type="button" class="share-btn" aria-label="Compartir">${shareIconSVG()}</button>
         </div>
-        <div class="pd-fit">${esc(p.brand)} ${esc(p.model)} · ${p.yearFrom}–${p.yearTo} · ${esc(p.side)}</div>
+        <div class="pd-fit">${esc(p.brand)} ${esc(p.model)} · ${p.yearFrom}–${p.yearTo}${p.side ? ' · Lado ' + esc(p.side) : ''}</div>
 
         <div class="pd-price">
           ${priceHTML(p)}
@@ -1629,7 +1629,7 @@ function initProduct(){
           <dt>Condición</dt><dd>${STZ_CONDITION_LABEL[p.condition]}</dd>
           ${p.oem ? `<dt>OEM</dt><dd class="mono">${p.oem}</dd>` : ''}
           <dt>Código interno</dt><dd class="mono">${p.internal}</dd>
-          <dt>Lado / Posición</dt><dd>${esc(p.side)}</dd>
+          ${p.side ? `<dt>Lado</dt><dd>${esc(p.side)}</dd>` : ''}
           <dt>Procedencia</dt><dd>${p.unit ? 'Unidad de desarme ' + p.unit : 'Pieza nueva de proveedor'}</dd>
         </dl>
 
@@ -2093,7 +2093,7 @@ function initDesarme(){
                 </span>
               </div>
               <div class="info">
-                <b>${esc(pt.name)}</b>
+                <b>${esc(pt.name)}${pt.side ? ' · ' + esc(pt.side) : ''}</b>
                 <div class="zpart__foot">
                   <span class="zpart__price">${gs(pt.price)}</span>
                   <span class="zpart__cond zpart__cond--${pt.condition}">${esc(STZ_CONDITION_LABEL[pt.condition])}</span>
@@ -2233,7 +2233,7 @@ function initCart(){
               <div>
                 <div class="card-oem">${p.oem ? 'OEM ' + p.oem + ' · ' : ''}${p.id}</div>
                 <h3><a href="producto.html?id=${encodeURIComponent(p.id)}">${esc(p.name)}</a></h3>
-                <div class="card-fit">${esc(p.brand)} ${esc(p.model)} · ${p.yearFrom}–${p.yearTo} · <b style="color:${p.condition === 'nuevo' ? 'var(--red)' : 'var(--ink)'}">${STZ_CONDITION_LABEL[p.condition]}</b></div>
+                <div class="card-fit">${esc(p.brand)} ${esc(p.model)} · ${p.yearFrom}–${p.yearTo}${p.side ? ' · Lado ' + esc(p.side) : ''} · <b style="color:${p.condition === 'nuevo' ? 'var(--red)' : 'var(--ink)'}">${STZ_CONDITION_LABEL[p.condition]}</b></div>
                 <div class="links">
                   <button type="button" data-remove="${p.id}">Eliminar</button>
                   <button type="button" data-save="${p.id}">Guardar para después</button>

@@ -458,6 +458,9 @@ function productCard(p, opts){
   const shareTitle = p.name + ' — ' + p.id;
   const fitTxt = [p.brand, p.model].filter(Boolean).join(' ');
   const yearsTxt = (p.yearFrom || p.yearTo) ? (' · ' + (p.yearFrom || '…') + '–' + (p.yearTo || '…')) : '';
+  /* Lado marcado en el ERP. Solo aparece en piezas que vienen en par
+     (opticas, puertas, espejos); el resto no lo tiene y no ocupa lugar. */
+  const sideTxt = p.side ? (' · Lado ' + p.side) : '';
   const promoFinal = (typeof stzPromo === 'function') ? stzPromo(p).final : p.price;
   const waMsg = 'Hola STZ, me interesa ' + p.name + ' (código ' + p.internal + '). Precio: ' + gs(promoFinal || 0) + '. URL: ' + location.origin + '/producto.html?id=' + encodeURIComponent(p.id);
   return `
@@ -475,7 +478,7 @@ function productCard(p, opts){
     <div class="card-body">
       <div class="card-oem">${p.oem ? 'OEM · ' + esc(p.oem) : 'INT · ' + esc(p.internal)}</div>
       <a class="card-title" href="producto.html?id=${encodeURIComponent(p.id)}">${esc(p.name)}</a>
-      <div class="card-fit">${esc(fitTxt)}${yearsTxt}</div>
+      <div class="card-fit">${esc(fitTxt)}${yearsTxt}${esc(sideTxt)}</div>
       <div class="card-price-row">
         ${priceHTML(p)}
         ${stockHTML(p)}
