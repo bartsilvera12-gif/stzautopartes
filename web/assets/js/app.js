@@ -1385,6 +1385,9 @@ function initHome(){
       console.error('[quick-sell] insert error', err);
       const msg = err && err.message ? err.message : String(err);
       toast('No se pudo enviar: ' + msg);
+    } finally {
+      // Siempre restaurar el boton — tanto en exito como en error — o queda
+      // en 'Enviando...' para siempre.
       if (btn) { btn.disabled = false; btn.innerHTML = originalBtn; }
     }
   });
@@ -2382,6 +2385,9 @@ function initSellPage(){
       console.error('[sell-form] insert error', err);
       const msg = err && err.message ? err.message : String(err);
       toast('No se pudo enviar: ' + msg);
+    } finally {
+      // Siempre restaurar el boton (antes solo se hacia en el catch: al enviar
+      // ok el boton quedaba en 'Enviando...' para siempre).
       if (btn) { btn.disabled = false; btn.innerHTML = originalBtn; }
     }
   });
