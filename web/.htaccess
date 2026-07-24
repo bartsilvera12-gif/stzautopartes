@@ -42,10 +42,11 @@ DirectoryIndex index.html
   ExpiresByType font/woff2  "access plus 30 days"
   ExpiresByType font/woff   "access plus 30 days"
 
-  # CSS y JS: cache corto para poder desplegar rápido
-  ExpiresByType text/css                "access plus 7 days"
-  ExpiresByType application/javascript  "access plus 7 days"
-  ExpiresByType text/javascript         "access plus 7 days"
+  # CSS y JS: cache muy corto durante fase de iteracion.
+  # Cuando el sitio se estabilice, subir a 7 dias.
+  ExpiresByType text/css                "access plus 0 seconds"
+  ExpiresByType application/javascript  "access plus 0 seconds"
+  ExpiresByType text/javascript         "access plus 0 seconds"
 
   # HTML: no cachear (siempre servir la última versión)
   ExpiresByType text/html "access plus 0 seconds"
