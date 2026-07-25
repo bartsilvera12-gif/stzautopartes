@@ -171,10 +171,17 @@
    * Lado de la pieza tal como lo marcaron en el ERP.
    * null = la pieza no tiene lado (motor, caja, radiador...) y no se muestra.
    */
+  const SIDE_LABELS = {
+    izquierda: 'Izquierdo (chofer)',
+    derecha: 'Derecho (acompañante)',
+    delantera_izquierda: 'Delantero izquierdo (chofer)',
+    delantera_derecha: 'Delantero derecho (acompañante)',
+    trasera_izquierda: 'Trasero izquierdo (chofer)',
+    trasera_derecha: 'Trasero derecho (acompañante)',
+  };
+
   function sideLabel(lado) {
-    if (lado === 'izquierda') return 'Izquierdo';
-    if (lado === 'derecha') return 'Derecho';
-    return null;
+    return SIDE_LABELS[lado] || null;
   }
 
   function mapProducto(row, categoriasByUuid, galeriaPorProducto) {

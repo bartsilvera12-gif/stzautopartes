@@ -464,7 +464,7 @@ function priceHTML(p){
 function fitText(p){
   const marca  = [p.brand, p.model].filter(Boolean).join(' ');
   const anios  = (p.yearFrom || p.yearTo) ? ((p.yearFrom || '…') + '–' + (p.yearTo || '…')) : '';
-  const lado   = p.side ? ('Lado ' + p.side) : '';
+  const lado   = p.side || '';
   return [marca, anios, lado].filter(Boolean).join(' · ');
 }
 
@@ -477,7 +477,7 @@ function productCard(p, opts){
   const yearsTxt = (p.yearFrom || p.yearTo) ? (' · ' + (p.yearFrom || '…') + '–' + (p.yearTo || '…')) : '';
   /* Lado marcado en el ERP. Solo aparece en piezas que vienen en par
      (opticas, puertas, espejos); el resto no lo tiene y no ocupa lugar. */
-  const sideTxt = p.side ? (' · Lado ' + p.side) : '';
+  const sideTxt = p.side ? (' · ' + p.side) : '';
   const promoFinal = (typeof stzPromo === 'function') ? stzPromo(p).final : p.price;
   const waMsg = 'Hola STZ, me interesa ' + p.name + ' (código ' + p.internal + '). Precio: ' + gs(promoFinal || 0) + '. URL: ' + location.origin + '/producto.html?id=' + encodeURIComponent(p.id);
   return `
