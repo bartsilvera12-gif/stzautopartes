@@ -433,7 +433,10 @@ function renderFooter(){
 
 /* ---------- tarjeta de producto (reutilizable) ---------- */
 function stockHTML(p){
-  if (p.stock === null) return '<div class="stock ask">◐ Consultar disponibilidad</div>';
+  // stock null = el producto no controla stock en el ERP. Antes se mostraba
+  // "◐ Consultar disponibilidad"; ensuciaba la fila del precio, asi que no se
+  // muestra nada. El boton de compra sigue derivando a WhatsApp.
+  if (p.stock === null) return '';
   if (p.stock === 0)    return '<div class="stock out" style="color:#a8071a">✕ Sin stock · 0</div>';
   if (p.stock === 1)    return '<div class="stock low">● Última unidad</div>';
   return '<div class="stock">● En stock · ' + p.stock + '</div>';

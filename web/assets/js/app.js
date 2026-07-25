@@ -392,7 +392,11 @@ function initTaller(){
     return fav.length >= PAGE_SIZE ? fav : base;
   }
   const stockInfo = p => {
-    if (p.stock === null) return { cls:'is-ask', txt:'Consultar disponibilidad', canBuy:false };
+    // stock null = no controla stock en el ERP. No se anuncia nada: el CTA
+    // del panel ya lleva al detalle y al boton de WhatsApp.
+    // stock null = no controla stock en el ERP. No es "sin stock": el CTA
+    // manda al detalle como cualquier pieza disponible y no se anuncia nada.
+    if (p.stock === null) return { cls:'is-ask', txt:'', canBuy:true };
     if (p.stock === 0)    return { cls:'is-out', txt:'Sin stock · disponibilidad 0', canBuy:false };
     if (p.stock === 1)    return { cls:'is-low', txt:'Última unidad', canBuy:true };
     return { cls:'is-ok', txt:'En stock · ' + p.stock, canBuy:true };
@@ -1638,17 +1642,18 @@ function initProduct(){
           <p style="font-size:13px;line-height:1.55;color:var(--gray);margin:8px 0 0">${esc(p.notes)}</p>
         </div>
 
+        ${p.stock === null ? '' : `
         <div class="pd-cta">
           <div class="qty">
-            <button type="button" data-q="-1" aria-label="Restar" ${p.stock === 0 || p.stock === null ? 'disabled' : ''}>−</button>
+            <button type="button" data-q="-1" aria-label="Restar" ${p.stock === 0 ? 'disabled' : ''}>−</button>
             <span id="qty">${qty}</span>
-            <button type="button" data-q="1" aria-label="Sumar" ${p.stock === 0 || p.stock === null ? 'disabled' : ''}>+</button>
+            <button type="button" data-q="1" aria-label="Sumar" ${p.stock === 0 ? 'disabled' : ''}>+</button>
           </div>
           <button class="btn btn-dark" type="button" id="add-cart"
-                  ${p.stock === 0 || p.stock === null ? 'disabled title="Sin stock disponible"' : ''}>
-            ${p.stock === 0 ? 'Sin stock' : (p.stock === null ? 'Consultar disponibilidad' : 'Agregar al carrito →')}
+                  ${p.stock === 0 ? 'disabled title="Sin stock disponible"' : ''}>
+            ${p.stock === 0 ? 'Sin stock' : 'Agregar al carrito →'}
           </button>
-        </div>
+        </div>`}
         ${p.stock === 0 ? `
         <div class="warn" style="background:#fff1f0;border-color:#ffccc7;color:#a8071a;margin-top:12px">
           <b>Sin stock actualmente.</b> Consultanos por WhatsApp para saber cuándo vuelve o si tenemos una unidad equivalente en desarme.
@@ -1666,7 +1671,10 @@ function initProduct(){
       qty = Math.max(1, qty + Number(b.dataset.q));
       $('#qty').textContent = qty;
     }));
-    $('#add-cart').addEventListener('click', () => cartAdd(p.id, qty));
+    // Sin control de stock (stock null) no se dibuja el bloque de carrito:
+    // la unica accion es el boton de WhatsApp.
+    const addCartBtn = $('#add-cart');
+    if (addCartBtn) addCartBtn.addEventListener('click', () => cartAdd(p.id, qty));
 
     /* zoom: hover con lente + panel al costado en desktop; click abre lightbox */
     const main = $('#pd .pd-main');

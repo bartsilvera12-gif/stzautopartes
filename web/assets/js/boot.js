@@ -179,7 +179,7 @@
       condition: 'usado',
       price: row.precio_venta != null ? Number(row.precio_venta) : null,
       // Semantica de stock para la web:
-      //   controla_stock=false  -> null -> 'Consultar disponibilidad'
+      //   controla_stock=false  -> null -> sin badge de stock en la web
       //   controla_stock=true   -> stock_actual (0 = agotado, 1 = ultima, N = ok)
       stock: row.controla_stock === false
         ? null
