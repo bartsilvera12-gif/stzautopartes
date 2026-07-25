@@ -207,7 +207,9 @@
       model: row.modelo_vehiculo || null,
       yearFrom: anioD,
       yearTo: anioH != null ? anioH : anioD,
-      condition: 'usado',
+      // Condición marcada en el ERP. Sin dato se asume usado (el grueso del
+      // catálogo viene de desarme).
+      condition: row.condicion || 'usado',
       price: row.precio_venta != null ? Number(row.precio_venta) : null,
       // Semantica de stock para la web:
       //   controla_stock=false  -> null -> sin badge de stock en la web
