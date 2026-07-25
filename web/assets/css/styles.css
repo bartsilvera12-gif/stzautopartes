@@ -232,7 +232,12 @@ h1,h2,h3{margin:0;letter-spacing:-.03em;line-height:1.02;font-weight:900}
 .hero-inner > *:nth-child(4){animation-delay:.47s}
 .hero-inner > *:nth-child(5){animation-delay:.60s}
 .hero-inner > *:nth-child(6){animation-delay:.73s}
+/* 7mo: el logo se sumo al frente y corrio todo un lugar. */
+.hero-inner > *:nth-child(7){animation-delay:.86s}
 
+/* Logo sobre el hero. Version light porque el fondo es oscuro.
+   El alto lo pone el ancho (aspect-ratio del archivo: 535x296). */
+.hero-logo{display:block;width:clamp(190px,21vw,310px);height:auto;margin:0 0 22px}
 .hero-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.82);margin:0 0 26px}
 .hero h1{font-weight:800;font-size:clamp(30px,3.4vw,48px);line-height:1.08;letter-spacing:-.03em;margin:0 0 26px;color:#fff;max-width:560px}
 .hero h1 em{font-style:normal;color:var(--red)}
