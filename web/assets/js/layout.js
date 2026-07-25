@@ -454,6 +454,20 @@ function priceHTML(p){
   return `<div class="price">${gs(p.price)}</div>`;
 }
 
+/**
+ * Linea de compatibilidad: "Toyota Corolla · 2015–2019 · Lado Izquierdo".
+ *
+ * Cada parte es opcional. Un producto cargado sin marca/modelo/anios mostraba
+ * " · null–null"; ahora esas partes simplemente no se arman y si no queda nada
+ * devuelve '' para que el llamador no dibuje la fila.
+ */
+function fitText(p){
+  const marca  = [p.brand, p.model].filter(Boolean).join(' ');
+  const anios  = (p.yearFrom || p.yearTo) ? ((p.yearFrom || '…') + '–' + (p.yearTo || '…')) : '';
+  const lado   = p.side ? ('Lado ' + p.side) : '';
+  return [marca, anios, lado].filter(Boolean).join(' · ');
+}
+
 function productCard(p, opts){
   opts = opts || {};
   const tagClass = p.condition === 'nuevo' ? 'tag nuevo' : (p.condition === 'recuperado' ? 'tag recuperado' : 'tag');

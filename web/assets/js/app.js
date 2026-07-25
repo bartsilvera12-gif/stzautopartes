@@ -13,11 +13,18 @@ function imgSrc(v) {
   return 'assets/img/fotos/' + v;
 }
 
-const BRANDS = [...new Set(STZ_PRODUCTS.map(p => p.brand))].sort();
-const MODELS = [...new Set(STZ_PRODUCTS.map(p => p.model))].sort();
+/* Los productos sin compatibilidad cargada traen brand/model/anios en null;
+   se descartan para que los filtros no muestren opciones vacias ni el año 0. */
+const BRANDS = [...new Set(STZ_PRODUCTS.map(p => p.brand).filter(Boolean))].sort();
+const MODELS = [...new Set(STZ_PRODUCTS.map(p => p.model).filter(Boolean))].sort();
 const YEARS  = (() => {
   const s = new Set();
-  STZ_PRODUCTS.forEach(p => { for (let y = p.yearFrom; y <= p.yearTo; y++) s.add(y); });
+  STZ_PRODUCTS.forEach(p => {
+    const desde = Number(p.yearFrom) || null;
+    const hasta = Number(p.yearTo) || desde;
+    if (!desde) return;
+    for (let y = desde; y <= hasta; y++) s.add(y);
+  });
   return [...s].sort((a,b) => b - a);
 })();
 
@@ -431,7 +438,7 @@ function initTaller(){
             <span class="taller__pos-cond">${esc(cond)}</span>
           </div>
           <h3 class="taller__title">${esc(p.name)}</h3>
-          <div class="taller__fit">${esc(p.brand)} ${esc(p.model)} · ${p.yearFrom}–${p.yearTo}</div>
+          <div class="taller__fit">${esc(fitText(p))}</div>
           <div class="taller__price-row">
             <div class="taller__price">${(function(){var pr=stzPromo(p);return pr.hasPromo?('<span style="text-decoration:line-through;opacity:.6;margin-right:8px">'+gs(pr.original)+'</span>'+gs(pr.final)):gs(p.price);})()}</div>
             <div class="taller__stock ${s.cls}">${esc(s.txt)}</div>
@@ -1622,7 +1629,7 @@ function initProduct(){
           </div>
           <button type="button" class="share-btn" aria-label="Compartir">${shareIconSVG()}</button>
         </div>
-        <div class="pd-fit">${esc(p.brand)} ${esc(p.model)} · ${p.yearFrom}–${p.yearTo}${p.side ? ' · Lado ' + esc(p.side) : ''}</div>
+        ${fitText(p) ? `<div class="pd-fit">${esc(fitText(p))}</div>` : ''}
 
         <div class="pd-price">
           ${priceHTML(p)}
@@ -2241,7 +2248,7 @@ function initCart(){
               <div>
                 <div class="card-oem">${p.oem ? 'OEM ' + p.oem + ' · ' : ''}${p.id}</div>
                 <h3><a href="producto.html?id=${encodeURIComponent(p.id)}">${esc(p.name)}</a></h3>
-                <div class="card-fit">${esc(p.brand)} ${esc(p.model)} · ${p.yearFrom}–${p.yearTo}${p.side ? ' · Lado ' + esc(p.side) : ''} · <b style="color:${p.condition === 'nuevo' ? 'var(--red)' : 'var(--ink)'}">${STZ_CONDITION_LABEL[p.condition]}</b></div>
+                <div class="card-fit">${fitText(p) ? esc(fitText(p)) + ' · ' : ''}<b style="color:${p.condition === 'nuevo' ? 'var(--red)' : 'var(--ink)'}">${STZ_CONDITION_LABEL[p.condition]}</b></div>
                 <div class="links">
                   <button type="button" data-remove="${p.id}">Eliminar</button>
                   <button type="button" data-save="${p.id}">Guardar para después</button>
