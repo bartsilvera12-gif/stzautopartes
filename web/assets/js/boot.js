@@ -15,10 +15,34 @@
 (function () {
   const CDN_URL = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';
 
+  /**
+   * Version de assets, tomada del ?v= con el que el HTML pidio este boot.js.
+   *
+   * Hostinger sirve el JS con Cache-Control de 7 dias, asi que un navegador
+   * que ya tiene la version vieja no la vuelve a pedir aunque se suba una
+   * nueva. El HTML si se revalida (max-age=0): al bumpear el ?v= en las
+   * etiquetas <script>, la URL cambia y el navegador baja todo de nuevo.
+   */
+  const ASSET_VERSION = (function () {
+    try {
+      const self = document.currentScript || document.querySelector('script[src*="boot.js"]');
+      const v = self && new URL(self.src, location.href).searchParams.get('v');
+      return v || '';
+    } catch (e) {
+      return '';
+    }
+  })();
+
+  function withVersion(src) {
+    // Solo los assets propios; el CDN de Supabase ya viene versionado.
+    if (!ASSET_VERSION || /^https?:\/\//.test(src)) return src;
+    return src + (src.indexOf('?') === -1 ? '?' : '&') + 'v=' + encodeURIComponent(ASSET_VERSION);
+  }
+
   function loadScript(src) {
     return new Promise((resolve, reject) => {
       const s = document.createElement('script');
-      s.src = src;
+      s.src = withVersion(src);
       s.onload = () => resolve();
       s.onerror = () => reject(new Error('No se pudo cargar ' + src));
       document.head.appendChild(s);

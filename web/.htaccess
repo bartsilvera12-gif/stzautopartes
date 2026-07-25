@@ -77,6 +77,18 @@ DirectoryIndex index.html
   Header always set X-Content-Type-Options "nosniff"
   # Referrer razonable
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # ---------------------------------------------------------------------------
+  # Cache de JS/CSS: se fuerza acá además de mod_expires porque el hosting venía
+  # respondiendo max-age=604800 (7 días) y los cambios no llegaban al visitante
+  # que ya tenía el archivo cacheado. Con must-revalidate el navegador siempre
+  # pregunta y el 304 sigue siendo barato.
+  # Igual el HTML versiona los assets con ?v=, que es lo que realmente garantiza
+  # que un cambio se vea sin depender de estos headers.
+  # ---------------------------------------------------------------------------
+  <FilesMatch "\.(js|css)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
 </IfModule>
 
 # Ocultar el .htaccess a curiosos
