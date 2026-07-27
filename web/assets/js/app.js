@@ -1641,7 +1641,10 @@ function initProduct(){
           ${p.oem ? `<dt>OEM</dt><dd class="mono">${p.oem}</dd>` : ''}
           <dt>Código interno</dt><dd class="mono">${p.internal}</dd>
           ${p.side ? `<dt>Lado</dt><dd>${esc(p.side)}</dd>` : ''}
-          <dt>Procedencia</dt><dd>${p.unit ? 'Unidad de desarme ' + p.unit : 'Pieza nueva de proveedor'}</dd>
+          <!-- "Procedencia" salio a pedido: mostraba "Pieza nueva de proveedor"
+               para todo producto sin unidad de desarme asociada, lo que era
+               falso en la mayoria de los casos. La condicion real ya sale
+               arriba en la fila "Condicion". -->
         </dl>
 
         <div style="margin-top:20px">
