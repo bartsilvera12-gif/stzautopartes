@@ -261,6 +261,8 @@
       imgs: photos.slice(1).map(([u]) => u),
       partsList: piezas.map((p) => ({
         id: p.id,
+        // Código que se le muestra al cliente. Sin él se caía al UUID.
+        internal: p.codigo_interno || null,
         name: p.nombre,
         descripcion: p.descripcion || '',
         price: p.precio != null ? Number(p.precio) : null,

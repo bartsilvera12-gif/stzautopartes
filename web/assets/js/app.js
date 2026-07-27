@@ -409,7 +409,7 @@ function initTaller(){
     return { cls:'is-ok', txt:'En stock · ' + p.stock, canBuy:true };
   };
   const waHref = p => `https://wa.me/${STZ_WHATSAPP}?text=` +
-    encodeURIComponent(`Hola STZ, consulto por ${p.id} — ${p.name}`);
+    encodeURIComponent(`Hola STZ, consulto por ${codigoVisible(p) || p.name} — ${p.name}`);
   const goLabel = s => s.canBuy ? 'Ver repuesto' : 'Consultar stock';
 
   function panelHTML(p, i){
@@ -1607,7 +1607,7 @@ function initProduct(){
       <div class="pd-gallery">
         <div class="pd-main ph" data-ph="${esc(p.photos[img][1])}">
           ${photo(p.photos[img][0], p.name + ' — ' + p.photos[img][1])}
-          <span class="tag ${p.condition === 'nuevo' ? 'nuevo' : (p.condition === 'recuperado' ? 'recuperado' : '')}">${STZ_CONDITION_SHORT[p.condition]} · ${p.id}</span>
+          <span class="tag ${p.condition === 'nuevo' ? 'nuevo' : (p.condition === 'recuperado' ? 'recuperado' : '')}">${STZ_CONDITION_SHORT[p.condition]}${codigoVisible(p) ? ' · ' + esc(codigoVisible(p)) : ''}</span>
           <button type="button" class="pd-zoom-btn" id="pd-zoom-open" aria-label="Ver imagen ampliada">
             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <circle cx="9" cy="9" r="6"/><path d="M14 14l4 4M9 6v6M6 9h6"/>
@@ -1624,7 +1624,7 @@ function initProduct(){
       <div class="pd-info">
         <div class="udet-head">
           <div>
-            <div class="kicker">${esc(cat.name)} · ${p.id}</div>
+            <div class="kicker">${esc(cat.name)}${codigoVisible(p) ? ' · ' + esc(codigoVisible(p)) : ''}</div>
             <h1>${esc(p.name)}</h1>
           </div>
           <button type="button" class="share-btn" aria-label="Compartir">${shareIconSVG()}</button>
@@ -1695,7 +1695,7 @@ function initProduct(){
       openZoom();
     });
     attachHoverZoom(main);
-    wireShareButton($('#pd .share-btn'), p.name + ' — ' + p.id);
+    wireShareButton($('#pd .share-btn'), codigoVisible(p) ? p.name + ' — ' + codigoVisible(p) : p.name);
   };
   draw();
 
@@ -2105,7 +2105,7 @@ function initDesarme(){
             <a class="zpart" href="producto.html?id=${encodeURIComponent(pt.id)}">
               <div class="media">
                 ${photoBox(pt.img, pt.ph)}
-                <span class="code">${pt.id}</span>
+                <span class="code">${esc(codigoVisible(pt))}</span>
                 <span class="zpart__arrow" aria-hidden="true">
                   <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11l6-6M11 5H6M11 5v5"/></svg>
                 </span>
@@ -2249,7 +2249,7 @@ function initCart(){
             <div class="cart-item">
               <a class="media" href="producto.html?id=${encodeURIComponent(p.id)}">${photoBox(p.img, p.ph)}</a>
               <div>
-                <div class="card-oem">${p.oem ? 'OEM ' + p.oem + ' · ' : ''}${p.id}</div>
+                <div class="card-oem">${p.oem ? 'OEM ' + esc(p.oem) + ' · ' : ''}${esc(codigoVisible(p))}</div>
                 <h3><a href="producto.html?id=${encodeURIComponent(p.id)}">${esc(p.name)}</a></h3>
                 <div class="card-fit">${fitText(p) ? esc(fitText(p)) + ' · ' : ''}<b style="color:${p.condition === 'nuevo' ? 'var(--red)' : 'var(--ink)'}">${STZ_CONDITION_LABEL[p.condition]}</b></div>
                 <div class="links">

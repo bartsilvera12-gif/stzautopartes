@@ -461,6 +461,18 @@ function priceHTML(p){
  * " · null–null"; ahora esas partes simplemente no se arman y si no queda nada
  * devuelve '' para que el llamador no dibuje la fila.
  */
+/**
+ * Código que se le muestra al cliente: el SKU / código interno del ERP.
+ *
+ * `p.id` es el UUID de Supabase y solo sirve para armar URLs. Cuando el
+ * catálogo eran datos de prueba, `id` era un código legible ("STZ-P208") y
+ * quedaron varios lugares imprimiéndolo; con datos reales salía el UUID
+ * entero, incluso en el título que se comparte por WhatsApp.
+ */
+function codigoVisible(p){
+  return (p && (p.internal || p.code)) || '';
+}
+
 function fitText(p){
   const marca  = [p.brand, p.model].filter(Boolean).join(' ');
   const anios  = (p.yearFrom || p.yearTo) ? ((p.yearFrom || '…') + '–' + (p.yearTo || '…')) : '';
@@ -472,7 +484,8 @@ function productCard(p, opts){
   opts = opts || {};
   const tagClass = p.condition === 'nuevo' ? 'tag nuevo' : (p.condition === 'recuperado' ? 'tag recuperado' : 'tag');
   const shareUrl = 'producto.html?id=' + encodeURIComponent(p.id);
-  const shareTitle = p.name + ' — ' + p.id;
+  const codigo = codigoVisible(p);
+  const shareTitle = codigo ? (p.name + ' — ' + codigo) : p.name;
   const fitTxt = [p.brand, p.model].filter(Boolean).join(' ');
   const yearsTxt = (p.yearFrom || p.yearTo) ? (' · ' + (p.yearFrom || '…') + '–' + (p.yearTo || '…')) : '';
   /* Lado marcado en el ERP. Solo aparece en piezas que vienen en par
@@ -486,7 +499,7 @@ function productCard(p, opts){
       ${photo(p.img, p.name)}
       <span class="card-topbar" aria-hidden="true"></span>
       <span class="${tagClass}">${STZ_CONDITION_SHORT[p.condition]}</span>
-      <span class="card-sku">${p.id}</span>
+      <span class="card-sku">${esc(codigo)}</span>
       ${p.note ? `<span class="card-note">${esc(p.note)}</span>` : ''}
       <button type="button" class="card-share" data-share-url="${esc(shareUrl)}" data-share-title="${esc(shareTitle)}" aria-label="Compartir ${esc(p.name)}">
         ${shareIconSVG()}
