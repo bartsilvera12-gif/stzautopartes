@@ -105,6 +105,12 @@ DirectoryIndex index.html
   <FilesMatch "\.(js|css)$">
     Header set Cache-Control "no-cache, must-revalidate"
   </FilesMatch>
+
+  # El CDN llegó a cachear producto.php EN CRUDO (devolvía el código fuente en
+  # vez de ejecutarlo, alternando entre nodos). Se le prohíbe guardarlo.
+  <FilesMatch "\.php$">
+    Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+  </FilesMatch>
 </IfModule>
 
 # Ocultar el .htaccess a curiosos

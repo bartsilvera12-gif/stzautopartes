@@ -147,6 +147,16 @@ if ($producto) {
 }
 
 header('Content-Type: text/html; charset=UTF-8');
-// La ficha se arma igual desde el navegador; solo el <head> depende del id.
-header('Cache-Control: public, max-age=300');
+/**
+ * Sin caché a propósito.
+ *
+ * Delante del sitio hay un CDN (`Server: hcdn`). Con una respuesta cacheable
+ * llegó a quedar guardado el ARCHIVO PHP EN CRUDO en algunos nodos —los
+ * pedidos alternaban entre el HTML correcto y el código fuente—, así que el
+ * crawler recibía basura y no mostraba miniatura.
+ *
+ * A esta ruta solo entran bots de vista previa: no cachearla no cuesta nada.
+ */
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
 echo $html;
