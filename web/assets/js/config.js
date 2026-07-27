@@ -22,4 +22,15 @@ window.STZ_CONFIG = {
 
   // Bucket público de fotos del módulo Desarme.
   DESARME_BUCKET: 'desarme-imagenes',
+
+  /**
+   * Base del ERP, usada SOLO para los links de "compartir producto".
+   *
+   * La vista previa de WhatsApp necesita etiquetas og:* en el HTML, y este
+   * sitio es estático (la ficha se arma en el navegador). El ERP corre del
+   * lado del servidor: /p/<id> genera la vista previa y redirige acá.
+   *
+   * Vacío = compartir el link directo de producto.html, sin miniatura.
+   */
+  ERP_URL: 'https://stzautopartes.neura.com.py',
 };

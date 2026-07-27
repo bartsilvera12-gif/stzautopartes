@@ -27,6 +27,21 @@ function shareIconSVG(){
        +   '<path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>'
        + '</svg>';
 }
+/**
+ * Link que se comparte de un producto.
+ *
+ * Va al ERP (/p/<id>), que genera la vista previa con foto y precio del lado
+ * del servidor y después redirige a la ficha de acá. Este sitio es estático:
+ * los crawlers de WhatsApp no ejecutan JS y veían la página vacía.
+ *
+ * Sin ERP_URL configurado se comparte el link directo, sin miniatura.
+ */
+function shareUrlProducto(id){
+  const base = (window.STZ_CONFIG && window.STZ_CONFIG.ERP_URL || '').replace(/\/$/, '');
+  if (!base) return new URL('producto.html?id=' + encodeURIComponent(id), location.href).href;
+  return base + '/p/' + encodeURIComponent(id);
+}
+
 function wireShareButton(btn, title, url){
   if (!btn) return;
   const href = url || location.href;
@@ -483,7 +498,7 @@ function fitText(p){
 function productCard(p, opts){
   opts = opts || {};
   const tagClass = p.condition === 'nuevo' ? 'tag nuevo' : (p.condition === 'recuperado' ? 'tag recuperado' : 'tag');
-  const shareUrl = 'producto.html?id=' + encodeURIComponent(p.id);
+  const shareUrl = shareUrlProducto(p.id);
   const codigo = codigoVisible(p);
   const shareTitle = codigo ? (p.name + ' — ' + codigo) : p.name;
   const fitTxt = [p.brand, p.model].filter(Boolean).join(' ');
@@ -492,7 +507,7 @@ function productCard(p, opts){
      (opticas, puertas, espejos); el resto no lo tiene y no ocupa lugar. */
   const sideTxt = p.side ? (' · ' + p.side) : '';
   const promoFinal = (typeof stzPromo === 'function') ? stzPromo(p).final : p.price;
-  const waMsg = 'Hola STZ, me interesa ' + p.name + ' (código ' + p.internal + '). Precio: ' + gs(promoFinal || 0) + '. URL: ' + location.origin + '/producto.html?id=' + encodeURIComponent(p.id);
+  const waMsg = 'Hola STZ, me interesa ' + p.name + ' (código ' + p.internal + '). Precio: ' + gs(promoFinal || 0) + '. URL: ' + shareUrlProducto(p.id);
   return `
   <article class="card">
     <a class="card-media ph" data-ph="${esc(p.ph)}" href="producto.html?id=${encodeURIComponent(p.id)}" aria-label="${esc(p.name)}">
