@@ -32,5 +32,5 @@ window.STZ_CONFIG = {
    *
    * Vacío = compartir el link directo de producto.html, sin miniatura.
    */
-  ERP_URL: 'https://stzautopartes.neura.com.py',
+  ERP_URL: 'https://link.stzautopartes.com',
 };
