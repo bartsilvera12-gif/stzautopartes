@@ -11,6 +11,13 @@
  * etiquetas del producto pedido y lo devuelve tal cual. El .htaccess manda
  * /producto.html acá, así que la URL que se comparte no cambia.
  *
+ * Se llama og.php (y no producto.php) a propósito: el CDN de Hostinger había
+ * guardado el archivo anterior en crudo y lo seguía sirviendo sin ejecutarlo.
+ * Ver el comentario en .htaccess.
+ *
+ * Para diagnosticar: pedir /og.php?id=<uuid>&debug=1 devuelve un JSON con lo
+ * que el servidor pudo leer, sin tener que mirar el HTML entero.
+ *
  * Si algo falla (sin PHP, sin red, id inválido) se devuelve el HTML original:
  * la página sigue funcionando, solo se pierde la miniatura.
  */
@@ -67,6 +74,28 @@ if (preg_match('/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0
     ]);
 
     if (is_array($data) && isset($data[0])) $producto = $data[0];
+}
+
+/**
+ * Modo diagnóstico: /og.php?id=<uuid>&debug=1
+ *
+ * Responde JSON en vez de HTML. Si esto se ve, PHP se está ejecutando; si en
+ * cambio aparece el código fuente, el problema es del servidor o del CDN, no
+ * del script.
+ */
+if (isset($_GET['debug'])) {
+    header('Content-Type: application/json; charset=UTF-8');
+    header('Cache-Control: no-store');
+    echo json_encode([
+        'php'              => PHP_VERSION,
+        'id_recibido'      => $id,
+        'producto_hallado' => $producto !== null,
+        'nombre'           => $producto['nombre'] ?? null,
+        'imagen'           => $producto['imagen_url'] ?? null,
+        'html_leido'       => strlen($html),
+        'curl'             => function_exists('curl_init'),
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+    exit;
 }
 
 /** Escapa para usar dentro de un atributo HTML. */

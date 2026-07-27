@@ -20,12 +20,15 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 # Solo se desvía a los BOTS de vista previa. Las personas siguen recibiendo el
 # producto.html estático de siempre: si el hosting no tuviera PHP, lo peor que
 # pasa es que se pierde la miniatura, nunca que se rompa la página.
-# OJO con el destino: tiene que ir SIN barra inicial. Con "/producto.php"
-# LiteSpeed (el servidor de Hostinger) lo toma como ruta de archivo y devuelve
-# el PHP como texto plano, sin ejecutarlo. En relativo vuelve a pasar por el
-# handler de PHP, que es lo que queremos.
+# El destino va SIN barra inicial: con "/og.php" LiteSpeed lo toma como ruta
+# de archivo y puede devolver el PHP sin ejecutar.
+#
+# Se llama og.php y no producto.php porque el CDN de Hostinger guardó una vez
+# el producto.php EN CRUDO y lo seguía sirviendo (upstream-rt de 1 ms: nunca
+# llegaba a ejecutarse el script). Un nombre que el CDN nunca vio evita esa
+# copia envenenada sin depender de purgar nada.
 RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|WhatsApp|Twitterbot|TelegramBot|Discordbot|Slackbot|LinkedInBot|SkypeUriPreview|Applebot|Googlebot|bingbot|redditbot|Pinterest|vkShare|W3C_Validator) [NC]
-RewriteRule ^producto\.html$ producto.php [L,QSA]
+RewriteRule ^producto\.html$ og.php [L,QSA]
 
 # --- URLs limpias: /catalogo → /catalogo.html --------------------------------
 RewriteCond %{REQUEST_FILENAME} !-f
