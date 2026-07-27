@@ -11,6 +11,18 @@ RewriteEngine On
 RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
+# --- Vista previa de producto en WhatsApp ------------------------------------
+# producto.html arma la ficha desde el navegador y los crawlers no ejecutan JS,
+# así que el link salía sin miniatura. producto.php devuelve el MISMO HTML con
+# las etiquetas og:* del producto inyectadas en el <head>.
+# Es un rewrite interno: la URL que ve el usuario no cambia.
+#
+# Solo se desvía a los BOTS de vista previa. Las personas siguen recibiendo el
+# producto.html estático de siempre: si el hosting no tuviera PHP, lo peor que
+# pasa es que se pierde la miniatura, nunca que se rompa la página.
+RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|WhatsApp|Twitterbot|TelegramBot|Discordbot|Slackbot|LinkedInBot|SkypeUriPreview|Applebot|Googlebot|bingbot|redditbot|Pinterest|vkShare|W3C_Validator) [NC]
+RewriteRule ^producto\.html$ /producto.php [L,QSA]
+
 # --- URLs limpias: /catalogo → /catalogo.html --------------------------------
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
