@@ -42,6 +42,22 @@ function shareUrlProducto(id){
   return base + '/p/' + encodeURIComponent(id);
 }
 
+/**
+ * Link que se comparte de una unidad de desarme.
+ *
+ * Mismo puente que los productos, pero por codigo (UD064, 04-198): es lo que
+ * usa la URL de la unidad y lo que el cliente reconoce del auto.
+ *
+ * Sin esto se compartia desarme.html directo y WhatsApp mostraba el titulo
+ * generico de la pagina ("Vehiculos en desarme"), sin la foto del vehiculo:
+ * la ficha se arma en el navegador y el crawler no ejecuta JavaScript.
+ */
+function shareUrlUnidad(code){
+  const base = (window.STZ_CONFIG && window.STZ_CONFIG.ERP_URL || '').replace(/\/$/, '');
+  if (!base) return new URL('desarme.html?u=' + encodeURIComponent(code), location.href).href;
+  return base + '/u/' + encodeURIComponent(code);
+}
+
 function wireShareButton(btn, title, url){
   if (!btn) return;
   const href = url || location.href;

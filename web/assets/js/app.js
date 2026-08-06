@@ -1194,7 +1194,11 @@ function initUnidadDetail(){
     </div>`;
 
   /* Botón compartir */
-  wireShareButton(root.querySelector('.share-btn'), u.name + ' · ' + u.year + ' — Unidad ' + u.code);
+  wireShareButton(
+    root.querySelector('.share-btn'),
+    u.name + ' · ' + u.year + ' — Unidad ' + u.code,
+    shareUrlUnidad(u.code)
+  );
 
   /* Galería: navegación estilo Marketplace (flechas + dots + swipe + teclado) */
   if (multi){
