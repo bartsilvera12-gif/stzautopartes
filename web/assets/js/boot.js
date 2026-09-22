@@ -218,7 +218,11 @@
         ? null
         : (row.stock_actual != null ? Math.max(0, Math.floor(Number(row.stock_actual))) : null),
       side: sideLabel(row.lado),
-      unit: null,
+      // Código de la unidad de desarme de la que salió la pieza (105 / UD064).
+      // null = producto que no viene de desarme. Es la clave con la que el
+      // catálogo filtra "Ver repuestos de esta unidad" y con la que producto.html
+      // arma los relacionados de la misma unidad.
+      unit: row.desarme_unidad_codigo || null,
       img: principalUrl,
       ph: row.nombre,
       notes: row.descripcion || '',

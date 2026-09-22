@@ -1128,7 +1128,11 @@ function initUnidadDetail(){
   crumbsEl.innerHTML = `<div>Home · <a href="desarme.html">Vehículos en desarme</a> · <b>Unidad ${esc(u.code)} — ${esc(u.name)} ${u.year}</b></div>`;
 
   const brand = brandOf(u);
-  const catalogoHref = 'catalogo.html?' + new URLSearchParams({ marca: brand, anio: String(u.year) }).toString();
+  // "Ver repuestos de esta unidad" filtra el catálogo por la unidad puntual
+  // (?unidad=105), no por marca+año: varias unidades comparten marca/año y antes
+  // se colaban piezas de otros vehículos. El vínculo exacto es el código de la
+  // unidad, que cada producto de desarme guarda en `unit` (desarme_unidad_codigo).
+  const catalogoHref = 'catalogo.html?' + new URLSearchParams({ unidad: u.code }).toString();
   const wa = waLink(`Hola STZ, quiero consultar por la unidad ${u.code} (${u.name} ${u.year}).`);
   const status = STATUS_LABEL[u.status] || STATUS_LABEL.ok;
 
@@ -1420,6 +1424,10 @@ function initCatalog(){
     model: params.get('modelo') || '',
     yearFrom: '', yearTo: params.get('anio') || '',
     conds: new Set(params.get('cond') ? [params.get('cond')] : []),
+    // Alcance por unidad de desarme (?unidad=105). Cuando viene, el catálogo
+    // muestra EXCLUSIVAMENTE los repuestos de esa unidad; los demás filtros del
+    // sidebar siguen operando dentro de ese alcance. Se quita con su propio chip.
+    unit: params.get('unidad') || '',
     maxPrice: 5000000,
     stock: new Set(),
     sort: 'rel'
@@ -1519,6 +1527,8 @@ function initCatalog(){
         .filter(Boolean).join(' ').toLowerCase();
       if (!hay.includes(q)) return false;
     }
+    // Alcance por unidad de desarme: solo repuestos que salieron de esa unidad.
+    if (state.unit && p.unit !== state.unit) return false;
     if (state.cats.size   && !state.cats.has(p.category)) return false;
     if (state.brands.size && !state.brands.has(p.brand))  return false;
     if (state.conds.size  && !state.conds.has(p.condition)) return false;
@@ -1553,6 +1563,7 @@ function initCatalog(){
 
     /* chips activos */
     const chips = [];
+    if (state.unit) chips.push(['unit:' + state.unit, 'Unidad ' + state.unit, 'red']);
     if (state.q) chips.push(['q', '“' + state.q + '”', '']);
     state.cats.forEach(c => chips.push(['cat:' + c, (STZ_CATEGORIES.find(x => x.id === c) || {}).name || c, '']));
     state.brands.forEach(b => chips.push(['brand:' + b, b, '']));
@@ -1582,6 +1593,14 @@ function initCatalog(){
     if (!chip) return;
     const [type, val] = chip.dataset.chip.split(':');
     if (type === 'q'){ $('#cat-search').value = ''; }
+    if (type === 'unit'){
+      // Sale del alcance por unidad: se limpia el estado y se quita de la URL
+      // para que un refresh no lo vuelva a aplicar.
+      state.unit = '';
+      const url = new URL(location.href);
+      url.searchParams.delete('unidad');
+      history.replaceState(null, '', url);
+    }
     if (type === 'cat')   $$('#f-categorias input').forEach(i => { if (i.value === val) i.checked = false; });
     if (type === 'brand') $$('#f-marcas input').forEach(i => { if (i.value === val) i.checked = false; });
     if (type === 'cond')  $$('#f-condicion input').forEach(i => { if (i.value === val) i.checked = false; });
@@ -1997,8 +2016,6 @@ function initDesarme(){
   let animTimer = 0, animExit = 0;
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* Nombre de marca dentro de la unidad → marca canónica del catálogo */
-  const BRAND_ALIAS = { 'VW':'Volkswagen', 'Chevy':'Chevrolet' };
   /* Zona → categoría principal del catálogo (aproximación primaria; el usuario
      puede desactivarla desde el sidebar si busca algo de otra familia) */
   const ZONE_TO_CAT = {
@@ -2008,12 +2025,14 @@ function initDesarme(){
     'Puertas': 'burletes',
     'Cola':    'faros'
   };
-  /* Arma URL del catálogo pre-filtrado por vehículo + zona */
+  /* Arma URL del catálogo scopeado a ESTA unidad, opcionalmente afinado por la
+     categoría de la zona. Se filtra por la unidad puntual (?unidad=105), no por
+     marca+año: eso mostraba piezas de otras unidades compatibles. La categoría de
+     zona es un afinado dentro del alcance de la unidad (el usuario puede quitarla
+     desde el sidebar). */
   const zoneCatalogUrl = (u, z) => {
     const p = new URLSearchParams();
-    const brand = BRAND_ALIAS[u.name.split(' ')[0]] || u.name.split(' ')[0];
-    p.set('marca', brand);
-    if (u.year) p.set('anio', String(u.year));
+    p.set('unidad', u.code);
     if (z && ZONE_TO_CAT[z.name]) p.set('cat', ZONE_TO_CAT[z.name]);
     return 'catalogo.html?' + p.toString();
   };
