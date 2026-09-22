@@ -1,0 +1,10 @@
+{
+  "name": "stzautopartes-sitio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sitio estatico STZ AutoPartes. `npm run build` empaqueta web/ en dist/ para subir a Hostinger.",
+  "scripts": {
+    "dev": "node web/server.js",
+    "build": "node build.js"
+  }
+}
