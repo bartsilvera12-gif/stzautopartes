@@ -184,7 +184,7 @@
     return SIDE_LABELS[lado] || null;
   }
 
-  function mapProducto(row, categoriasByUuid, galeriaPorProducto) {
+  function mapProducto(row, categoriasByUuid, galeriaPorProducto, unitCodePorProductoId) {
     const cat = categoriasByUuid.get(row.categoria_principal_id);
     const categoryKey = cat ? (cat.codigo ? cat.codigo.toLowerCase() : cat.id) : 'otras';
     const galeria = galeriaPorProducto.get(row.id) || [];
@@ -218,11 +218,13 @@
         ? null
         : (row.stock_actual != null ? Math.max(0, Math.floor(Number(row.stock_actual))) : null),
       side: sideLabel(row.lado),
-      // Código de la unidad de desarme de la que salió la pieza (105 / UD064).
+      // Código de la unidad de desarme a la que pertenece el producto.
+      // AUTORITATIVO: primero el vínculo real pieza→producto (unitCodePorProductoId);
+      // el snapshot productos.desarme_unidad_codigo queda solo como respaldo.
       // null = producto que no viene de desarme. Es la clave con la que el
       // catálogo filtra "Ver repuestos de esta unidad" y con la que producto.html
       // arma los relacionados de la misma unidad.
-      unit: row.desarme_unidad_codigo || null,
+      unit: (unitCodePorProductoId && unitCodePorProductoId.get(row.id)) || row.desarme_unidad_codigo || null,
       img: principalUrl,
       ph: row.nombre,
       notes: row.descripcion || '',
@@ -304,6 +306,18 @@
       arr.push(p);
       piezasPorUnidad.set(p.unidad_id, arr);
     });
+
+    // Relación AUTORITATIVA unidad→producto: se arma desde las piezas
+    // (desarme_piezas.unidad_id + producto_id), no desde el snapshot
+    // productos.desarme_unidad_codigo. Así el catálogo muestra en cada unidad
+    // exactamente los productos realmente ligados a ella.
+    const codigoUnidadPorId = new Map((unidades.data || []).map((u) => [u.id, u.codigo]));
+    const unitCodePorProductoId = new Map();
+    (piezas.data || []).forEach((p) => {
+      if (!p.producto_id) return;
+      const code = codigoUnidadPorId.get(p.unidad_id);
+      if (code) unitCodePorProductoId.set(p.producto_id, code);
+    });
     const galeriaPorUnidad = new Map();
     (unidadImgs.data || []).forEach((g) => {
       const arr = galeriaPorUnidad.get(g.unidad_id) || [];
@@ -313,7 +327,7 @@
     });
 
     const mappedProductos = (prods.data || []).map((p) =>
-      mapProducto(p, categoriasByUuid, galeriaPorProducto)
+      mapProducto(p, categoriasByUuid, galeriaPorProducto, unitCodePorProductoId)
     );
     const mappedCategorias = (cats.data || []).map((c, i) => mapCategoria(c, i, prods.data || []));
     const mappedUnidades = (unidades.data || []).map((u) => mapUnidad(u, piezasPorUnidad, galeriaPorUnidad));
